@@ -16,6 +16,8 @@ import { request } from "../services/api";
 
 import Header from "../components/Header.jsx";
 
+import { useAuth } from "../context/AuthContext";
+
 // ============================================================
 // STATE LIST FOR USER
 // ============================================================
@@ -86,6 +88,7 @@ const emptyUser = {
 
 export default function Admin() {
   const nav = useNavigate();
+  const { logout } = useAuth();
 
   // ==========================================================
   // VIDEO STATES
@@ -581,14 +584,9 @@ export default function Admin() {
   // LOGOUT
   // ==========================================================
 
-  async function logout() {
-    try {
-      await request("/api/auth/logout", {
-        method: "POST",
-      });
-    } finally {
-      nav("/admin/login/09");
-    }
+  async function handleLogout() {
+    await logout();
+    nav("/admin/login/09");
   }
 
   // ==========================================================
@@ -647,7 +645,7 @@ export default function Admin() {
             <h1>Admin Dashboard</h1>
           </div>
 
-          <button onClick={logout}>Logout</button>
+          <button onClick={handleLogout}>Logout</button>
         </div>
 
         {/* ===================================================

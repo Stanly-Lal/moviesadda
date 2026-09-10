@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { request } from "../services/api";
 import Header from "../components/Header.jsx";
+import { useAuth } from "../context/AuthContext";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -11,6 +12,7 @@ export default function AdminLogin() {
   const [busy, setBusy] = useState(false);
 
   const nav = useNavigate();
+  const { refreshUser } = useAuth();
 
   async function submit(e) {
     e.preventDefault();
@@ -26,6 +28,9 @@ export default function AdminLogin() {
           password,
         }),
       });
+
+      // Update AuthContext immediately after admin login
+      await refreshUser();
 
       nav("/admin");
     } catch (e) {

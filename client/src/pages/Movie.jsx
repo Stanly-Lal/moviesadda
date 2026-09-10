@@ -7,6 +7,8 @@ import Footer from "../components/Footer";
 
 import { request } from "../services/api";
 
+import { GiPlayButton } from "react-icons/gi";
+
 export default function Movie() {
   const { id } = useParams();
 
@@ -191,7 +193,7 @@ export default function Movie() {
                     href={movie.videoUrl}
                     rel="noopener noreferrer"
                   >
-                    ▶ Watch Movie
+                    <GiPlayButton /> Watch Movie
                   </a>
                 )}
 

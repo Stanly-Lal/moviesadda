@@ -175,9 +175,9 @@ export default function Header({ search, setSearch }) {
 
         <div
           className={`desktop-search ${
-            pathname === "/admin/login/09" || pathname === "/admin"
-              ? "headerHidden"
-              : ""
+            pathname === "/" 
+              ? ""
+              : "headerHidden"
           }`}
         >
           <Search value={search} onChange={setSearch} />
@@ -217,9 +217,9 @@ export default function Header({ search, setSearch }) {
 
       <div
         className={
-          pathname === "/admin/login/09" || pathname === "/admin"
-            ? "headerHidden"
-            : "mobile-search"
+          pathname === "/"
+            ? "mobile-search"
+            : "headerHidden"
         }
       >
         <Search value={search} onChange={setSearch} />

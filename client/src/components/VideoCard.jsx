@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { GiPlayButton } from "react-icons/gi";
 
 export default function VideoCard({ video }) {
   return (
@@ -11,7 +12,7 @@ export default function VideoCard({ video }) {
           loading="lazy"
         />
 
-        <div className="play">▶</div>
+        <div className="play"><GiPlayButton /></div>
       </div>
 
       <div className="card-body">

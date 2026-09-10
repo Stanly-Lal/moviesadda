@@ -34,8 +34,18 @@
    RESET
 ========================================= */
 
+/* Remove mobile tap highlight */
 * {
+  -webkit-tap-highlight-color: transparent;
   box-sizing: border-box;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
 }
 
 html {

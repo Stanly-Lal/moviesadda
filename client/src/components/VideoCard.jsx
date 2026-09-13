@@ -2,32 +2,30 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { GiPlayButton } from "react-icons/gi";
 
-export default function VideoCard({ video, page }) {
+export default function VideoCard({ video, page, searchQuery }) {
   function handleClick() {
-    // Save the current Home page
-    sessionStorage.setItem(
-      "homePage",
-      page.toString()
-    );
+    // ========================================================
+    // SAVE PAGE
+    // ========================================================
 
-    // Save the exact scroll position
-    sessionStorage.setItem(
-      "homeScrollPosition",
-      window.scrollY.toString()
-    );
+    sessionStorage.setItem("homePage", String(page));
+
+    // ========================================================
+    // SAVE EXACT SCROLL POSITION
+    // ========================================================
+
+    const key = `homeScroll_${searchQuery || "all"}_page_${page}`;
+
+    sessionStorage.setItem(key, String(window.scrollY));
   }
 
   return (
-    <Link
-      className="card"
-      to={`/movie/${video._id}`}
-      onClick={handleClick}
-    >
+    <Link className="card" to={`/movie/${video._id}`} onClick={handleClick}>
       <div className="poster">
         <img
           src={video.posterUrl}
           alt={`${video.title} poster`}
-          loading="lazy"
+          loading="eager"
         />
 
         <div className="play">

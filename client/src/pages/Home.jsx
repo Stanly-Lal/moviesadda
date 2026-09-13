@@ -1,12 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
+
 import Header from "../components/Header";
 import VideoCard from "../components/VideoCard";
 import Pagination from "../components/Pagination";
 import Footer from "../components/Footer";
+
 import { request } from "../services/api";
 
 export default function Home() {
-  // Restore the last Home page from sessionStorage
+  // ==========================================================
+  // PAGE
+  // ==========================================================
+
   const [page, setPage] = useState(() => {
     const savedPage = sessionStorage.getItem("homePage");
 
@@ -15,6 +20,10 @@ export default function Home() {
 
   const [search, setSearch] = useState("");
   const [q, setQ] = useState("");
+
+  // ==========================================================
+  // DATA
+  // ==========================================================
 
   const [data, setData] = useState({
     items: [],
@@ -26,62 +35,83 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Determines whether the initial position should be restored
-  const initialRestore = useRef(true);
+  // ==========================================================
+  // RESTORE CONTROL
+  // ==========================================================
 
-  // ---------------------------------------
-  // SAVE SCROLL POSITION
-  // ---------------------------------------
+  const hasRestoredRef = useRef(false);
+
+  // ==========================================================
+  // BROWSER SCROLL RESTORATION
+  // ==========================================================
 
   useEffect(() => {
-    function handleScroll() {
-      sessionStorage.setItem(
-        "homeScrollPosition",
-        window.scrollY.toString()
-      );
+    window.history.scrollRestoration = "manual";
+
+    return () => {
+      window.history.scrollRestoration = "auto";
+    };
+  }, []);
+
+  // ==========================================================
+  // SCROLL STORAGE KEY
+  // ==========================================================
+
+  function getScrollKey(pageNumber, searchQuery) {
+    return `homeScroll_${searchQuery || "all"}_page_${pageNumber}`;
+  }
+
+  // ==========================================================
+  // SAVE SCROLL POSITION
+  // ==========================================================
+
+  useEffect(() => {
+    function saveScrollPosition() {
+      const key = getScrollKey(page, q);
+
+      sessionStorage.setItem(key, String(window.scrollY));
     }
 
-    window.addEventListener("scroll", handleScroll, {
+    window.addEventListener("scroll", saveScrollPosition, {
       passive: true,
     });
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", saveScrollPosition);
     };
-  }, []);
+  }, [page, q]);
 
-  // ---------------------------------------
+  // ==========================================================
   // SEARCH
-  // ---------------------------------------
+  // ==========================================================
 
   useEffect(() => {
     const timer = setTimeout(() => {
       if (search !== q) {
-        // Search always starts from page 1
+        // New search starts on page 1
         setPage(1);
 
-        // Save page 1
         sessionStorage.setItem("homePage", "1");
 
-        // Search starts from top
-        sessionStorage.setItem(
-          "homeScrollPosition",
-          "0"
-        );
+        // Search starts at top
+        hasRestoredRef.current = true;
 
-        // Do not restore old scroll position
-        initialRestore.current = false;
+        window.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: "instant",
+        });
+
+        setQ(search);
       }
-
-      setQ(search);
     }, 350);
 
     return () => clearTimeout(timer);
-  }, [search]);
+  }, [search, q]);
 
-  // ---------------------------------------
+  // ==========================================================
   // FETCH VIDEOS
-  // ---------------------------------------
+  // ==========================================================
 
   useEffect(() => {
     let live = true;
@@ -89,12 +119,10 @@ export default function Home() {
     setLoading(true);
     setError("");
 
-    request(
-      `/api/videos?page=${page}&limit=12&q=${encodeURIComponent(q)}`
-    )
-      .then((x) => {
+    request(`/api/videos?page=${page}&limit=12&q=${encodeURIComponent(q)}`)
+      .then((result) => {
         if (live) {
-          setData(x);
+          setData(result);
         }
       })
       .catch((e) => {
@@ -113,15 +141,11 @@ export default function Home() {
     };
   }, [page, q]);
 
-  // ---------------------------------------
-  // RESTORE PAGE + SCROLL POSITION
-  // ---------------------------------------
+  // ==========================================================
+  // RESTORE SCROLL POSITION
+  // ==========================================================
 
   useEffect(() => {
-    if (!initialRestore.current) {
-      return;
-    }
-
     if (loading) {
       return;
     }
@@ -130,98 +154,85 @@ export default function Home() {
       return;
     }
 
-    const savedScroll = sessionStorage.getItem(
-      "homeScrollPosition"
-    );
-
-    if (savedScroll === null) {
-      initialRestore.current = false;
+    if (hasRestoredRef.current) {
       return;
     }
 
-    // Wait until the movie cards have fully rendered
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        window.scrollTo({
-          top: Number(savedScroll),
-          behavior: "instant",
-        });
+    const key = getScrollKey(page, q);
 
-        initialRestore.current = false;
-      });
+    const savedPosition = sessionStorage.getItem(key);
+
+    const targetPosition = savedPosition !== null ? Number(savedPosition) : 0;
+
+    // Mark as restored before scrolling
+    hasRestoredRef.current = true;
+
+    // Instant restoration for:
+    // Refresh
+    // Movie → Back
+    window.scrollTo({
+      top: targetPosition,
+      left: 0,
+      behavior: "instant",
     });
-  }, [loading, data.items]);
+  }, [loading, data.items, page, q]);
 
-  // ---------------------------------------
+  // ==========================================================
   // PAGINATION
-  // ---------------------------------------
+  // ==========================================================
 
   function handlePageChange(newPage) {
-    // Pagination should NOT restore old position
-    initialRestore.current = false;
+    // Save new page
+    sessionStorage.setItem("homePage", String(newPage));
 
-    // Save the new page
-    sessionStorage.setItem(
-      "homePage",
-      newPage.toString()
-    );
+    // New page starts at top
+    sessionStorage.setItem(getScrollKey(newPage, q), "0");
 
-    // New pagination page starts at top
-    sessionStorage.setItem(
-      "homeScrollPosition",
-      "0"
-    );
+    // Don't restore previous page position
+    hasRestoredRef.current = true;
 
     setPage(newPage);
 
+    // Smooth scroll ONLY for pagination
     window.scrollTo({
       top: 0,
+      left: 0,
       behavior: "smooth",
     });
   }
 
+  // ==========================================================
+  // RENDER
+  // ==========================================================
+
   return (
     <>
-      <Header
-        search={search}
-        setSearch={setSearch}
-      />
+      <Header search={search} setSearch={setSearch} />
 
       <main className="container">
         <div className="heading">
           <div>
-            <p className="eyebrow">
-              Movies Gallery
-            </p>
+            <p className="eyebrow">Movies Gallery</p>
 
-            <h1>
-              Watch, remember & share
-            </h1>
+            <h1>Watch, remember & share</h1>
           </div>
 
-          <p className="count">
-            {data.pagination.total || 0} videos
-          </p>
+          <p className="count">{data.pagination.total || 0} videos</p>
         </div>
 
-        {error && (
-          <div className="notice error">
-            {error}
-          </div>
-        )}
+        {error && <div className="notice error">{error}</div>}
 
         {loading ? (
-          <div className="empty">
-            Loading videos…
-          </div>
+          <div className="empty">Loading videos…</div>
         ) : data.items.length ? (
           <>
             <section className="grid">
-              {data.items.map((v) => (
+              {data.items.map((video) => (
                 <VideoCard
-                  key={v._id}
-                  video={v}
+                  key={video._id}
+                  video={video}
                   page={page}
+                  searchQuery={q}
                 />
               ))}
             </section>
@@ -233,9 +244,7 @@ export default function Home() {
             />
           </>
         ) : (
-          <div className="empty">
-            No videos found.
-          </div>
+          <div className="empty">No videos found.</div>
         )}
       </main>
 

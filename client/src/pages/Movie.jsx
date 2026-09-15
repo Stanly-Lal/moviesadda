@@ -8,6 +8,7 @@ import Footer from "../components/Footer";
 import { request } from "../services/api";
 
 import { GiPlayButton } from "react-icons/gi";
+import { FaDownload } from "react-icons/fa";
 
 export default function Movie() {
   const { id } = useParams();
@@ -42,18 +43,20 @@ export default function Movie() {
         }
       })
       .catch((e) => {
-        if (live) {
-          if (e.message === "Authentication required") {
-            nav("/login", {
-              replace: true,
+        if (!live) {
+          return;
+        }
 
-              state: {
-                from: `/movie/${id}`,
-              },
-            });
-          } else {
-            setError(e.message);
-          }
+        if (e.message === "Authentication required") {
+          nav("/login", {
+            replace: true,
+
+            state: {
+              from: `/movie/${id}`,
+            },
+          });
+        } else {
+          setError(e.message);
         }
       })
       .finally(() => {
@@ -78,42 +81,103 @@ export default function Movie() {
   }, []);
 
   // ==========================================================
-  // DOWNLOAD MOVIE
+  // SHOW DOWNLOAD TOAST
   // ==========================================================
 
-  function handleDownload() {
-    if (!movie?.videoUrl) {
-      return;
-    }
-
-    setDownloadMessage("Download started...");
+  function showDownloadMessage(message) {
+    setDownloadMessage(message);
 
     clearTimeout(downloadTimer.current);
 
     downloadTimer.current = setTimeout(() => {
       setDownloadMessage("");
     }, 3500);
-
-    // ========================================================
-    // TRIGGER EXTERNAL DOWNLOAD
-    //
-    // Hidden iframe keeps the current Movie page open.
-    // The external server should return the file as:
-    // Content-Disposition: attachment
-    // ========================================================
-
-    const iframe = document.createElement("iframe");
-
-    iframe.style.display = "none";
-
-    iframe.src = movie.videoUrl;
-
-    document.body.appendChild(iframe);
-
-    setTimeout(() => {
-      iframe.remove();
-    }, 30000);
   }
+
+  // ==========================================================
+  // DOWNLOAD MOVIE
+  // ==========================================================
+
+  function handleDownload() {
+    if (!movie?.downloadable || !movie?.downloadUrl) {
+      return;
+    }
+
+    // ========================================================
+    // DOWNLOAD PAGE
+    //
+    // IMPORTANT:
+    // This is checked BEFORE direct download.
+    // ========================================================
+
+    if (movie.downloadType === "page") {
+      showDownloadMessage("Getting download page...");
+
+      // ------------------------------------------------------
+      // Redirect to the third-party download page.
+      // ------------------------------------------------------
+
+      window.setTimeout(() => {
+        window.location.assign(movie.downloadUrl);
+      }, 250);
+
+      return;
+    }
+
+    // ========================================================
+    // DIRECT DOWNLOAD
+    // ========================================================
+
+    if (movie.downloadType === "direct") {
+      showDownloadMessage("Download started...");
+
+      // ------------------------------------------------------
+      // Hidden iframe keeps MoviesAdda open while requesting
+      // the third-party direct download.
+      // ------------------------------------------------------
+
+      const iframe = document.createElement("iframe");
+
+      iframe.style.display = "none";
+
+      iframe.src = movie.downloadUrl;
+
+      document.body.appendChild(iframe);
+
+      window.setTimeout(() => {
+        iframe.remove();
+      }, 30000);
+
+      return;
+    }
+  }
+
+  // ==========================================================
+  // WATCH MOVIE
+  // ==========================================================
+
+  function handleWatch() {
+    if (!movie?.videoUrl) {
+      return;
+    }
+
+    window.location.assign(movie.videoUrl);
+  }
+
+  // ==========================================================
+  // DETERMINE WATCH AVAILABILITY
+  // ==========================================================
+
+  const isLegacyDownloadOnly =
+    movie &&
+    typeof movie.downloadable !== "boolean" &&
+    movie.downloadOnly === true;
+
+  const hasWatchUrl = Boolean(movie?.videoUrl?.trim()) && !isLegacyDownloadOnly;
+
+  // ==========================================================
+  // RENDER
+  // ==========================================================
 
   return (
     <>
@@ -140,15 +204,21 @@ export default function Movie() {
       )}
 
       <main className="movie-page container">
-        {/* LOADING */}
+        {/* ===================================================
+            LOADING
+        =================================================== */}
 
         {loading && <div className="empty">Loading movie…</div>}
 
-        {/* ERROR */}
+        {/* ===================================================
+            ERROR
+        =================================================== */}
 
         {error && <div className="notice error">{error}</div>}
 
-        {/* MOVIE */}
+        {/* ===================================================
+            MOVIE
+        =================================================== */}
 
         {movie && (
           <article className="movie-card">
@@ -171,31 +241,44 @@ export default function Movie() {
               </p>
 
               <div className="movie-actions">
-                {/* =================================================
-                    DOWNLOAD MOVIE
-                ================================================= */}
+                {/* =============================================
+                    WATCH MOVIE
 
-                {movie.downloadOnly ? (
+                    Only shown when a real Watch URL exists.
+                ============================================= */}
+
+                {hasWatchUrl && (
                   <button
                     type="button"
                     className="primary movie-watch"
+                    onClick={handleWatch}
+                  >
+                    <GiPlayButton />
+                    Watch Movie
+                  </button>
+                )}
+
+                {/* =============================================
+                    DOWNLOAD MOVIE
+                ============================================= */}
+
+                {movie.downloadable && movie.downloadUrl && (
+                  <button
+                    type="button"
+                    className="primary movie-watch movie-download-button"
                     onClick={handleDownload}
                   >
-                    ↓ Download Movie
-                  </button>
-                ) : (
-                  /* ===============================================
-                     NORMAL WATCH MOVIE
-                  =============================================== */
+                    <FaDownload />
 
-                  <a
-                    className="primary movie-watch"
-                    href={movie.videoUrl}
-                    rel="noopener noreferrer"
-                  >
-                    <GiPlayButton /> Watch Movie
-                  </a>
+                    {movie.downloadType === "page"
+                      ? "Download Movie"
+                      : "Download Movie"}
+                  </button>
                 )}
+
+                {/* =============================================
+                    BACK
+                ============================================= */}
 
                 <Link className="movie-back" to="/">
                   ← Back to Movies

@@ -1,45 +1,69 @@
+/* ============================================================
+   MOVIESADDA
+   GLOBAL STYLESHEET
+   ============================================================ */
+
+/* ============================================================
+   1. THEME VARIABLES
+   ============================================================ */
+
 :root {
   --bg: #f6f7fb;
   --surface: #ffffff;
+  --surface-2: #f1f3f7;
+
   --text: #151925;
   --muted: #697386;
+
   --line: #e6e8ee;
+  --border: var(--line);
 
   --accent: #e11d48;
   --accentLight: rgba(225, 29, 72, 0.9);
+  --accent-soft: rgba(225, 29, 72, 0.08);
 
   --danger: #ef4444;
 
   --shadow: 0 12px 40px rgba(18, 24, 40, 0.08);
+
   --customColor: rgb(201, 0, 174);
 }
+
+/* ============================================================
+   DARK THEME
+   ============================================================ */
 
 :root[data-theme="dark"] {
   --bg: #0d1017;
   --surface: #151a24;
+  --surface-2: #1b212d;
+
   --text: #f6f7fb;
   --muted: #a8b0bf;
+
   --line: #272e3c;
+  --border: var(--line);
 
   --accent: #fb416a;
   --accentLight: rgba(251, 65, 106, 0.85);
+  --accent-soft: rgba(251, 65, 106, 0.1);
 
   --danger: #ff5a5a;
 
   --shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
+
   --customColor: white;
 }
 
-/* =========================================
-   RESET
-========================================= */
+/* ============================================================
+   2. RESET
+   ============================================================ */
 
-/* Remove mobile tap highlight */
 * {
-  -webkit-tap-highlight-color: transparent;
   box-sizing: border-box;
 }
 
+*,
 button,
 a,
 input,
@@ -70,21 +94,10 @@ a {
 }
 
 button,
-input {
+input,
+select,
+textarea {
   font: inherit;
-}
-
-/* =========================================
-   COMMON
-========================================= */
-
-.container {
-  width: min(1180px, calc(100% - 32px));
-  margin-inline: auto;
-}
-
-.headerHidden {
-  display: none !important;
 }
 
 button {
@@ -105,9 +118,22 @@ button:disabled {
   opacity: 0.6;
 }
 
-/* =========================================
-   HEADER
-========================================= */
+/* ============================================================
+   3. COMMON / UTILITY
+   ============================================================ */
+
+.container {
+  width: min(1180px, calc(100% - 32px));
+  margin-inline: auto;
+}
+
+.headerHidden {
+  display: none !important;
+}
+
+/* ============================================================
+   4. HEADER
+   ============================================================ */
 
 header {
   position: sticky;
@@ -115,16 +141,14 @@ header {
   z-index: 10;
 
   background: color-mix(in srgb, var(--bg) 92%, transparent);
-
   backdrop-filter: blur(16px);
 
   border-bottom: 1px solid var(--line);
 }
 
 .nav {
-  height: 72px;
-
   width: min(1180px, calc(100% - 32px));
+  height: 72px;
 
   margin-inline: auto;
 
@@ -135,9 +159,9 @@ header {
   gap: 24px;
 }
 
-/* =========================================
-   LOGO
-========================================= */
+/* ============================================================
+   5. LOGO / BRAND
+   ============================================================ */
 
 .brand {
   display: flex;
@@ -145,7 +169,6 @@ header {
 
   font-size: 1.35rem;
   font-weight: 850;
-
   letter-spacing: -0.04em;
 
   white-space: nowrap;
@@ -173,21 +196,18 @@ header {
   color: var(--accent);
 }
 
-/* =========================================
-   SEARCH
-========================================= */
+/* ============================================================
+   6. HEADER SEARCH
+   ============================================================ */
 
 .desktop-search {
   flex: 1;
-
   max-width: 540px;
-
   margin-inline: auto;
 }
 
 .mobile-search {
   display: none;
-
   padding: 0 16px 14px;
 }
 
@@ -198,13 +218,11 @@ header {
   align-items: center;
 
   gap: 9px;
-
   padding: 0 14px;
 
   background: var(--surface);
 
   border: 1px solid var(--line);
-
   border-radius: 14px;
 
   box-shadow: var(--shadow);
@@ -213,30 +231,36 @@ header {
 .search input {
   width: 100%;
 
+  margin: 0;
+  padding: 0;
+
   border: 0;
   outline: 0;
 
   background: transparent;
-
   color: var(--text);
 }
+
+/* ============================================================
+   7. HEADER ACTIONS
+   ============================================================ */
 
 .actions {
   display: flex;
   align-items: center;
+  gap: 9px;
 }
 
-/* =========================================
-   THEME BUTTON
-========================================= */
+/* ============================================================
+   8. THEME BUTTON
+   ============================================================ */
 
 .theme-btn {
   width: 42px;
   height: 42px;
 
-  border-radius: 50%;
-
   border: 1px solid var(--line);
+  border-radius: 50%;
 
   background: var(--surface);
   color: var(--text);
@@ -244,18 +268,53 @@ header {
 
 .theme-btn:hover {
   transform: translateY(-1px);
-
   border-color: var(--accent);
 }
 
-/* =========================================
-   HOME
-========================================= */
+/* ============================================================
+   9. USER ACCOUNT BUTTON
+   ============================================================ */
+
+.user-btn {
+  width: 42px;
+  height: 42px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid var(--line);
+  border-radius: 50%;
+
+  background: var(--surface);
+  color: var(--text);
+
+  font-size: 0.95rem;
+}
+
+.user-btn:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent);
+}
+
+.user-avatar {
+  border: none;
+
+  color: white;
+
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+/* ============================================================
+   10. HOME PAGE HEADING
+   ============================================================ */
 
 .heading {
   display: flex;
-  justify-content: space-between;
   align-items: end;
+  justify-content: space-between;
 
   gap: 20px;
 
@@ -265,33 +324,30 @@ header {
 .eyebrow {
   margin: 0 0 8px;
 
-  text-transform: uppercase;
-
-  letter-spacing: 0.14em;
-
   color: var(--accent);
 
   font-size: 0.76rem;
   font-weight: 800;
+
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
 }
 
 h1 {
   margin: 0;
 
   font-size: clamp(1.8rem, 4vw, 3rem);
-
   letter-spacing: -0.04em;
 }
 
 .count {
   margin: 0;
-
   color: var(--muted);
 }
 
-/* =========================================
-   VIDEO GRID
-========================================= */
+/* ============================================================
+   11. VIDEO GRID
+   ============================================================ */
 
 .grid {
   display: grid;
@@ -301,13 +357,16 @@ h1 {
   gap: 22px;
 }
 
+/* ============================================================
+   12. VIDEO CARD
+   ============================================================ */
+
 .card {
   overflow: hidden;
 
   background: var(--surface);
 
   border: 1px solid var(--line);
-
   border-radius: 18px;
 
   box-shadow: var(--shadow);
@@ -320,6 +379,10 @@ h1 {
 .card:hover {
   transform: translateY(-5px);
 }
+
+/* ============================================================
+   13. VIDEO POSTER
+   ============================================================ */
 
 .poster {
   position: relative;
@@ -340,6 +403,10 @@ h1 {
   object-fit: cover;
 }
 
+/* ============================================================
+   14. PLAY BUTTON OVER POSTER
+   ============================================================ */
+
 .play {
   position: absolute;
 
@@ -356,12 +423,17 @@ h1 {
 
   padding-left: 3px;
 
+  border: none;
   border-radius: 50%;
 
   background: rgba(0, 0, 0, 0.6);
 
   color: white;
 }
+
+/* ============================================================
+   15. VIDEO CARD BODY
+   ============================================================ */
 
 .card-body {
   padding: 14px;
@@ -373,26 +445,23 @@ h1 {
   font-size: 1rem;
 
   white-space: nowrap;
-
   overflow: hidden;
-
   text-overflow: ellipsis;
 }
 
 .card time {
   font-size: 0.84rem;
-
   color: var(--muted);
 }
 
-/* =========================================
-   PAGINATION
-========================================= */
+/* ============================================================
+   16. PAGINATION
+   ============================================================ */
 
 .pagination {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 
   flex-wrap: wrap;
 
@@ -408,11 +477,9 @@ h1 {
   padding: 0 12px;
 
   border: 1px solid var(--line);
-
   border-radius: 10px;
 
   background: var(--surface);
-
   color: var(--text);
 }
 
@@ -420,22 +487,42 @@ h1 {
   border-color: var(--accent);
 }
 
-.pagination .active,
-.primary {
-  background: var(--accent) !important;
-
-  color: white !important;
-
-  border-color: var(--accent) !important;
-}
-
 .pagination button:disabled {
   opacity: 0.45;
 }
 
-/* =========================================
-   NOTICES
-========================================= */
+.pagination .active {
+  background: var(--accent) !important;
+  color: white !important;
+  border-color: var(--accent) !important;
+}
+
+/* ============================================================
+   17. PRIMARY BUTTON
+   ============================================================ */
+
+.primary {
+  width: 100%;
+
+  padding: 13px 18px;
+
+  border: 0;
+  border-radius: 10px;
+
+  background: var(--accent);
+  color: white;
+
+  font-weight: 700;
+}
+
+.primary:hover:not(:disabled) {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+/* ============================================================
+   18. COMMON NOTICES
+   ============================================================ */
 
 .empty,
 .notice {
@@ -444,7 +531,6 @@ h1 {
   background: var(--surface);
 
   border: 1px solid var(--line);
-
   border-radius: 16px;
 
   text-align: center;
@@ -456,16 +542,16 @@ h1 {
   color: var(--danger);
 }
 
-/* =========================================
-   FOOTER
-========================================= */
+/* ============================================================
+   19. FOOTER
+   ============================================================ */
 
 footer {
-  border-top: 1px solid var(--line);
+  margin-top: 40px;
 
   padding: 28px 16px;
 
-  margin-top: 40px;
+  border-top: 1px solid var(--line);
 
   text-align: center;
 
@@ -476,9 +562,9 @@ footer strong {
   color: var(--text);
 }
 
-/* =========================================
-   LOGIN PAGE
-========================================= */
+/* ============================================================
+   20. AUTH / LOGIN / REGISTER
+   ============================================================ */
 
 .head {
   width: 100%;
@@ -493,45 +579,53 @@ footer strong {
   padding: 20px;
 }
 
+.auth-card {
+  width: min(420px, 100%);
+}
+
+/* ============================================================
+   21. COMMON PANELS
+   ============================================================ */
+
 .auth-card,
 .panel {
+  padding: 28px;
+
   background: var(--surface);
 
   border: 1px solid var(--line);
-
-  box-shadow: var(--shadow);
-
   border-radius: 20px;
 
-  padding: 28px;
-}
-
-.auth-card {
-  width: min(420px, 100%);
+  box-shadow: var(--shadow);
 }
 
 .auth-card h1 {
   margin-bottom: 24px;
 }
 
-/* =========================================
-   INPUTS
-========================================= */
+.panel h2 {
+  margin-top: 0;
+}
+
+/* ============================================================
+   22. COMMON INPUTS
+   ============================================================ */
 
 .auth-card input,
-.panel input {
+.auth-card select,
+.panel input,
+.panel select,
+.panel textarea {
   width: 100%;
 
   padding: 13px 14px;
 
   border: 1px solid var(--line);
-
   border-radius: 10px;
 
   outline: none;
 
   background: var(--bg);
-
   color: var(--text);
 
   margin: 8px 0;
@@ -542,37 +636,66 @@ footer strong {
 }
 
 .auth-card input:focus,
-.panel input:focus {
+.auth-card select:focus,
+.panel input:focus,
+.panel select:focus,
+.panel textarea:focus {
   border-color: var(--accent);
 
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
 }
 
-/* =========================================
-   PRIMARY BUTTON
-========================================= */
+/* ============================================================
+   23. AUTH SELECT
+   ============================================================ */
 
-.primary {
-  width: 100%;
+.auth-card select {
+  cursor: pointer;
+}
 
-  padding: 13px 18px;
+/* ============================================================
+   24. AUTH SWITCH
+   ============================================================ */
 
-  border: 0;
+.auth-switch {
+  margin: 18px 0 0;
 
-  border-radius: 10px;
+  text-align: center;
 
+  color: var(--muted);
+
+  font-size: 0.9rem;
+}
+
+.auth-switch a {
+  color: var(--accent);
   font-weight: 700;
 }
 
-.primary:hover:not(:disabled) {
-  filter: brightness(1.05);
-
-  transform: translateY(-1px);
+.auth-switch a:hover {
+  text-decoration: underline;
 }
 
-/* =========================================
-   ADMIN DASHBOARD
-========================================= */
+/* ============================================================
+   25. AUTH NAME FIELDS
+   ============================================================ */
+
+.name-fields {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 10px;
+}
+
+.name-fields input {
+  min-width: 0;
+  padding-right: 12px;
+}
+
+/* ============================================================
+   26. ADMIN DASHBOARD
+   ============================================================ */
 
 .admin {
   padding-top: 42px;
@@ -581,8 +704,8 @@ footer strong {
 
 .admin-top {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 
   gap: 20px;
 
@@ -595,11 +718,9 @@ footer strong {
   padding: 9px 12px;
 
   border: 1px solid var(--line);
-
   border-radius: 9px;
 
   background: var(--surface);
-
   color: var(--text);
 }
 
@@ -609,9 +730,9 @@ footer strong {
   border-color: var(--accent);
 }
 
-/* =========================================
-   ADMIN VIDEO GRID
-========================================= */
+/* ============================================================
+   27. ADMIN VIDEO GRID
+   ============================================================ */
 
 .admin-grid {
   display: grid;
@@ -623,9 +744,9 @@ footer strong {
   gap: 22px;
 }
 
-.panel h2 {
-  margin-top: 0;
-}
+/* ============================================================
+   28. ADMIN FORM LABELS
+   ============================================================ */
 
 .panel label {
   display: block;
@@ -633,84 +754,422 @@ footer strong {
   margin: 14px 0;
 
   font-size: 0.9rem;
-
   font-weight: 700;
 }
 
+/* ============================================================
+   29. GENERIC ROW
+   ============================================================ */
+
 .row {
   display: flex;
+  flex-wrap: wrap;
 
   gap: 10px;
-
-  flex-wrap: wrap;
 }
 
 .row .primary {
   width: auto;
 }
 
-/* =========================================
-   VIDEO ADMIN LIST
-========================================= */
+/* ============================================================
+   30. RECENT VIDEOS HEADER
+   ============================================================ */
+
+.recent-videos-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  margin-bottom: 16px;
+}
+
+.recent-videos-header h2 {
+  margin: 0;
+}
+
+/* ============================================================
+   31. VIDEO SEARCH
+   ============================================================ */
+
+.video-search {
+  position: relative;
+
+  width: 240px;
+
+  flex-shrink: 0;
+}
+
+.video-search-icon {
+  position: absolute;
+
+  top: 50%;
+  left: 12px;
+
+  transform: translateY(-50%);
+
+  color: var(--muted);
+
+  pointer-events: none;
+
+  font-size: 14px;
+}
+
+.video-search input {
+  width: 100%;
+
+  margin: 0;
+
+  padding-left: 36px;
+}
+
+/* ============================================================
+   32. ADMIN VIDEO LIST
+   ============================================================ */
 
 .admin-list {
   display: grid;
-  max-height: 350px;
+
+  max-height: 500px;
+
   overflow-y: auto;
   overflow-x: hidden;
+
   padding-right: 6px;
+
   gap: 10px;
 }
 
 .admin-list article {
   display: grid;
 
+  /*
+     58px matches the poster width below.
+     This prevents the title from sitting too close
+     to the poster.
+  */
   grid-template-columns:
-    48px
+    58px
     minmax(0, 1fr)
     auto
     auto;
 
   align-items: center;
 
-  gap: 10px;
+  /*
+     Space between:
+     Poster | Title | Edit | Delete
+  */
+  gap: 12px;
 
   padding: 8px 0;
 
   border-bottom: 1px solid var(--line);
 }
 
-.admin-list img {
-  width: 48px;
-  height: 64px;
+/* ============================================================
+   33. ADMIN RECENT VIDEO POSTER
+   ============================================================ */
+
+.admin-video-poster {
+  position: relative;
+
+  width: 58px;
+  height: 72px;
+
+  flex-shrink: 0;
+}
+
+.admin-video-poster img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
 
   object-fit: cover;
 
-  border-radius: 7px;
+  border-radius: 8px;
 }
 
-.admin-list strong,
-.admin-list small {
+/* ============================================================
+   34. DOWNLOADABLE VIDEO BADGE
+   ============================================================ */
+
+.admin-download-badge {
+  position: absolute;
+
+  top: 5px;
+  right: 5px;
+
+  width: 23px;
+  height: 23px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #f4c430;
+
+  color: #1b1b1b;
+
+  border: 2px solid var(--surface);
+
+  border-radius: 50%;
+
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+
+  z-index: 2;
+
+  pointer-events: none;
+}
+
+.admin-download-badge svg {
+  width: 11px;
+  height: 11px;
+
+  stroke-width: 2.8;
+}
+
+/* ============================================================
+   35. ADMIN VIDEO INFORMATION
+   ============================================================ */
+
+.admin-video-info {
+  min-width: 0;
+}
+
+.admin-video-info strong {
   display: block;
-}
 
-.admin-list strong {
   overflow: hidden;
 
-  white-space: nowrap;
-
   text-overflow: ellipsis;
+
+  white-space: nowrap;
 }
 
-.admin-list small {
+.admin-video-info small {
+  display: block;
+
   margin-top: 4px;
 
   color: var(--muted);
+
+  font-size: 12px;
 }
 
-/* =========================================
-   ADMIN MANAGEMENT
-========================================= */
+/* ============================================================
+   36. DOWNLOAD SETTINGS
+   ============================================================ */
+
+.download-settings {
+  margin: 18px 0 6px;
+
+  padding: 16px;
+
+  border: 1px solid var(--line);
+  border-radius: 14px;
+
+  background: var(--bg);
+}
+
+/* ============================================================
+   37. DOWNLOAD CHECKBOX
+   ============================================================ */
+
+.download-checkbox {
+  display: flex !important;
+
+  align-items: center;
+
+  width: fit-content;
+
+  margin: 0 !important;
+
+  cursor: pointer;
+}
+
+.download-checkbox input {
+  width: 18px !important;
+  height: 18px;
+
+  margin: 0 10px 0 0 !important;
+  padding: 0 !important;
+
+  cursor: pointer;
+
+  accent-color: var(--accent);
+}
+
+.download-checkbox > span {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  font-weight: 600;
+}
+
+.download-checkbox svg {
+  font-size: 14px;
+}
+
+/* ============================================================
+   38. DOWNLOAD OPTIONS
+   ============================================================ */
+
+.download-options {
+  margin-top: 16px;
+
+  padding-top: 16px;
+
+  border-top: 1px solid var(--line);
+}
+
+.download-type-title {
+  margin-bottom: 10px;
+
+  color: var(--text);
+
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.download-type-options {
+  display: grid;
+
+  gap: 10px;
+}
+
+.download-type-option {
+  display: flex !important;
+
+  flex-direction: row !important;
+
+  align-items: flex-start;
+
+  gap: 10px;
+
+  margin: 0 !important;
+
+  padding: 12px;
+
+  border: 1px solid var(--line);
+
+  border-radius: 10px;
+
+  background: var(--surface);
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.download-type-option:hover {
+  border-color: var(--accent);
+}
+
+.download-type-option input {
+  width: 17px !important;
+  height: 17px;
+
+  flex: 0 0 17px;
+
+  margin: 2px 0 0 !important;
+  padding: 0 !important;
+
+  accent-color: var(--accent);
+
+  cursor: pointer;
+}
+
+.download-type-option > span {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+
+  min-width: 0;
+}
+
+.download-type-option strong {
+  color: var(--text);
+
+  font-size: 0.88rem;
+}
+
+.download-type-option small {
+  color: var(--muted);
+
+  font-size: 0.78rem;
+  font-weight: 400;
+
+  line-height: 1.4;
+}
+
+/* ============================================================
+   39. DOWNLOAD URL
+   ============================================================ */
+
+.download-url-label {
+  margin-top: 16px !important;
+}
+
+.download-url-label input {
+  margin-bottom: 0;
+}
+
+.download-help {
+  margin: 2px 0 12px;
+
+  color: var(--muted);
+
+  font-size: 13px;
+}
+
+/* ============================================================
+   40. VIDEO FORM ACTIONS
+   ============================================================ */
+
+.video-form-actions {
+  display: flex;
+  align-items: center;
+
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+  margin-top: 18px;
+}
+
+.video-form-actions .primary {
+  width: auto;
+}
+
+.video-form-actions > button:not(.primary) {
+  padding: 13px 18px;
+
+  border: 1px solid var(--line);
+  border-radius: 10px;
+
+  background: var(--surface);
+  color: var(--text);
+
+  font-weight: 700;
+}
+
+.video-form-actions > button:not(.primary):hover {
+  border-color: var(--accent);
+}
+
+/* ============================================================
+   41. ADMIN MANAGEMENT
+   ============================================================ */
 
 .admin-management {
   display: grid;
@@ -720,6 +1179,10 @@ footer strong {
   gap: 22px;
 
   margin-top: 22px;
+}
+
+.admin-panel {
+  grid-column: 1 / -1;
 }
 
 .panel-description {
@@ -733,9 +1196,9 @@ footer strong {
   line-height: 1.5;
 }
 
-/* =========================================
-   PASSWORD INPUT WITH EYE ICON
-========================================= */
+/* ============================================================
+   42. PASSWORD INPUT
+   ============================================================ */
 
 .password-wrapper,
 .password-input {
@@ -744,7 +1207,8 @@ footer strong {
   width: 100%;
 }
 
-.password-input input {
+.password-input input,
+.password-wrapper input {
   padding-right: 50px !important;
 }
 
@@ -765,7 +1229,6 @@ footer strong {
   padding: 0;
 
   border: none;
-
   border-radius: 8px;
 
   background: transparent;
@@ -781,13 +1244,9 @@ footer strong {
   color: var(--accentLight);
 }
 
-/* =========================================
-   ADMIN USERS
-========================================= */
-
-.admin-panel {
-  grid-column: 1 / -1;
-}
+/* ============================================================
+   43. ADMIN USERS
+   ============================================================ */
 
 .admin-users {
   display: grid;
@@ -835,9 +1294,9 @@ footer strong {
   font-size: 0.8rem;
 }
 
-/* =========================================
-   DANGER BUTTON
-========================================= */
+/* ============================================================
+   44. DANGER BUTTON
+   ============================================================ */
 
 .danger {
   border: 1px solid var(--danger) !important;
@@ -855,14 +1314,16 @@ footer strong {
   color: white !important;
 }
 
-/* =========================================
-   TOAST NOTIFICATIONS
-========================================= */
+/* ============================================================
+   45. TOAST NOTIFICATIONS
+   ============================================================ */
 
 .toast {
   position: fixed;
+
   top: 88px;
   right: 24px;
+
   z-index: 9999;
 
   min-width: 300px;
@@ -870,11 +1331,13 @@ footer strong {
 
   display: flex;
   align-items: center;
+
   gap: 12px;
 
   padding: 14px 16px;
 
   background: var(--surface);
+
   border: 1px solid var(--line);
   border-radius: 12px;
 
@@ -899,11 +1362,13 @@ footer strong {
 
 .toast p {
   flex: 1;
+
   margin: 0;
 
   color: var(--text);
 
   font-size: 0.9rem;
+
   line-height: 1.4;
 }
 
@@ -916,14 +1381,14 @@ footer strong {
   padding: 0;
 
   border: none;
+
   background: transparent;
 
   color: var(--muted);
 
   font-size: 1.2rem;
-  line-height: 1;
 
-  cursor: pointer;
+  line-height: 1;
 }
 
 .toast button:hover {
@@ -936,6 +1401,7 @@ footer strong {
 
 .toast-success span {
   background: rgba(34, 197, 94, 0.12);
+
   color: #22c55e;
 }
 
@@ -945,119 +1411,13 @@ footer strong {
 
 .toast-error span {
   background: rgba(239, 68, 68, 0.12);
+
   color: var(--danger);
 }
 
-/* =========================================
-   USER ACCOUNT BUTTON
-========================================= */
-
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-}
-
-.user-btn {
-  width: 42px;
-  height: 42px;
-
-  flex-shrink: 0;
-
-  display: grid;
-  place-items: center;
-
-  border: 1px solid var(--line);
-  border-radius: 50%;
-
-  background: var(--surface);
-  color: var(--text);
-
-  font-size: 0.95rem;
-
-  transition:
-    transform 0.2s ease,
-    border-color 0.2s ease,
-    filter 0.2s ease;
-}
-
-.user-btn:hover {
-  transform: translateY(-1px);
-  border-color: var(--accent);
-}
-
-.user-avatar {
-  border: none;
-  color: white;
-  font-weight: 800;
-  font-size: 1rem;
-}
-
-/* =========================================
-   AUTH SWITCH
-========================================= */
-
-.auth-switch {
-  margin: 18px 0 0;
-
-  text-align: center;
-
-  color: var(--muted);
-
-  font-size: 0.9rem;
-}
-
-.auth-switch a {
-  color: var(--accent);
-  font-weight: 700;
-}
-
-.auth-switch a:hover {
-  text-decoration: underline;
-}
-
-/* =========================================
-   REGISTER SELECT
-========================================= */
-
-.auth-card select {
-  width: 100%;
-
-  margin: 8px 0;
-
-  padding: 13px 14px;
-
-  border: 1px solid var(--line);
-  border-radius: 10px;
-
-  outline: none;
-
-  background: var(--bg);
-  color: var(--text);
-
-  cursor: pointer;
-}
-
-.auth-card select:focus {
-  border-color: var(--accent);
-
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
-}
-
-.name-fields {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.name-fields input {
-  min-width: 0;
-  padding-right: 12px;
-}
-
-/* =========================================
-   MOVIE PAGE
-========================================= */
+/* ============================================================
+   46. MOVIE PAGE
+   ============================================================ */
 
 .movie-page {
   padding-top: 48px;
@@ -1071,16 +1431,15 @@ footer strong {
     minmax(240px, 360px)
     minmax(0, 1fr);
 
-  gap: 42px;
-
   align-items: center;
+
+  gap: 42px;
 
   padding: 28px;
 
   background: var(--surface);
 
   border: 1px solid var(--line);
-
   border-radius: 22px;
 
   box-shadow: var(--shadow);
@@ -1119,14 +1478,17 @@ footer strong {
   color: var(--muted);
 }
 
+/* ============================================================
+   47. MOVIE ACTIONS
+   ============================================================ */
+
 .movie-actions {
   display: flex;
-
   align-items: center;
 
-  gap: 14px;
-
   flex-wrap: wrap;
+
+  gap: 14px;
 }
 
 .movie-watch {
@@ -1137,27 +1499,49 @@ footer strong {
   align-items: center;
   justify-content: center;
 
+  gap: 8px;
+
   padding: 13px 20px;
+
+  border: none;
+
+  cursor: pointer;
 
   text-decoration: none;
 }
 
+.movie-download-button {
+  gap: 8px;
+}
+
+.movie-download-button svg {
+  font-size: 0.9rem;
+}
+
+/* ============================================================
+   48. MOVIE BACK BUTTON
+   ============================================================ */
+
 .movie-back {
-  color: var(--muted);
-  border: 1px solid var(--muted);
   padding: 13px 20px;
+
+  border: 1px solid var(--muted);
   border-radius: 10px;
+
+  color: var(--muted);
+
   font-weight: 700;
 }
 
 .movie-back:hover {
   color: var(--customColor);
-  border: 1px solid var(--customColor);
+
+  border-color: var(--customColor);
 }
 
-/* =========================================
-   ACCOUNT PAGE
-========================================= */
+/* ============================================================
+   49. ACCOUNT PAGE
+   ============================================================ */
 
 .account-card {
   width: min(480px, 100%);
@@ -1167,7 +1551,6 @@ footer strong {
   background: var(--surface);
 
   border: 1px solid var(--line);
-
   border-radius: 20px;
 
   box-shadow: var(--shadow);
@@ -1189,7 +1572,6 @@ footer strong {
   color: white;
 
   font-size: 2rem;
-
   font-weight: 850;
 }
 
@@ -1213,7 +1595,6 @@ footer strong {
   background: var(--bg);
 
   border: 1px solid var(--line);
-
   border-radius: 12px;
 }
 
@@ -1235,23 +1616,26 @@ footer strong {
 }
 
 /* ============================================================
-   USER MANAGEMENT
-============================================================ */
+   50. USER MANAGEMENT
+   ============================================================ */
 
 .user-management {
   grid-column: 1 / -1;
+
   margin-top: 24px;
 }
 
 /* ============================================================
-   USER MANAGEMENT HEADER
-============================================================ */
+   51. USER MANAGEMENT HEADER
+   ============================================================ */
 
 .user-management-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 20px;
+
   margin-bottom: 24px;
 }
 
@@ -1261,21 +1645,27 @@ footer strong {
 
 .user-add-button {
   display: inline-flex;
+
   align-items: center;
   justify-content: center;
+
   gap: 8px;
+
   white-space: nowrap;
 }
 
 /* ============================================================
-   USER FORM
-============================================================ */
+   52. USER FORM
+   ============================================================ */
 
 .user-form {
   padding: 22px;
+
   margin-bottom: 26px;
-  border: 1px solid var(--border);
+
+  border: 1px solid var(--line);
   border-radius: 14px;
+
   background: var(--surface);
 }
 
@@ -1289,15 +1679,21 @@ footer strong {
 
 .user-form-title p {
   margin: 0;
+
   color: var(--muted);
+
   font-size: 14px;
+
   line-height: 1.5;
 }
 
 .user-form label {
   display: flex;
+
   flex-direction: column;
+
   gap: 7px;
+
   margin-bottom: 16px;
 }
 
@@ -1308,16 +1704,28 @@ footer strong {
 
 .user-form select {
   padding: 13px 14px;
+
   padding-right: 50px;
+
   border: 1px solid var(--line);
   border-radius: 10px;
+
   outline: none;
+
   background: var(--bg);
   color: var(--text);
+
   margin: 8px 0;
+
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease;
+}
+
+.user-form select:focus {
+  border-color: var(--accent);
+
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
 }
 
 .user-form-actions {
@@ -1325,78 +1733,96 @@ footer strong {
 }
 
 /* ============================================================
-   USER SEARCH TOOLBAR
-============================================================ */
+   53. USER SEARCH TOOLBAR
+   ============================================================ */
 
 .user-management-toolbar {
   display: flex;
+
   align-items: center;
   justify-content: space-between;
+
   gap: 16px;
+
   margin-bottom: 18px;
 }
 
 .user-search {
   position: relative;
+
   display: flex;
   align-items: center;
+
   width: min(520px, 100%);
 }
 
 .user-search svg {
   position: absolute;
+
   left: 14px;
+
   pointer-events: none;
+
   color: var(--muted);
 }
 
 .user-search input {
   width: 100%;
+
   padding-left: 42px;
 }
 
 .user-count {
   flex-shrink: 0;
+
   color: var(--muted);
+
   font-size: 14px;
 }
 
 /* ============================================================
-   USER TABLE
-============================================================ */
+   54. USER TABLE
+   ============================================================ */
 
 .user-table-wrap {
   width: 100%;
+
   overflow-x: auto;
-  border: 1px solid var(--border);
+
+  border: 1px solid var(--line);
   border-radius: 12px;
 }
 
 .user-table {
   width: 100%;
+
   min-width: 850px;
+
   border-collapse: collapse;
 }
 
 .user-table th,
 .user-table td {
   padding: 15px 14px;
+
   text-align: left;
-  border-bottom: 1px solid var(--border);
+
+  border-bottom: 1px solid var(--line);
+
   vertical-align: middle;
 }
 
 .user-table th {
+  background: var(--surface-2);
+
+  color: var(--muted);
+
   font-size: 12px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--muted);
-  background: var(--surface-2);
-}
 
-.user-table tbody tr:last-child td {
-  border-bottom: none;
+  text-transform: uppercase;
+
+  letter-spacing: 0.05em;
 }
 
 .user-table tbody tr {
@@ -1407,14 +1833,21 @@ footer strong {
   background: var(--surface-2);
 }
 
+.user-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
 /* ============================================================
-   USER CELL
-============================================================ */
+   55. USER CELL
+   ============================================================ */
 
 .user-cell {
   display: flex;
+
   align-items: center;
+
   gap: 11px;
+
   min-width: 180px;
 }
 
@@ -1424,79 +1857,114 @@ footer strong {
 
 .user-cell strong {
   display: block;
+
   margin-bottom: 3px;
+
   white-space: nowrap;
+
   overflow: hidden;
+
   text-overflow: ellipsis;
 }
 
 .user-cell small {
   display: block;
+
   max-width: 150px;
+
   color: var(--muted);
+
   font-size: 11px;
+
   white-space: nowrap;
+
   overflow: hidden;
+
   text-overflow: ellipsis;
 }
 
+/* ============================================================
+   56. USER AVATAR
+   ============================================================ */
+
 .user-avatar-small {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 38px;
   height: 38px;
+
   flex: 0 0 38px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
   border-radius: 50%;
+
   color: #fff;
-  font-weight: 700;
+
   font-size: 15px;
+  font-weight: 700;
 }
 
 /* ============================================================
-   ROLE BADGES
-============================================================ */
+   57. ROLE BADGES
+   ============================================================ */
 
 .role-badge {
   display: inline-flex;
+
   align-items: center;
   justify-content: center;
+
   padding: 5px 10px;
+
   border-radius: 999px;
+
   font-size: 12px;
   font-weight: 700;
+
   white-space: nowrap;
 }
 
 .role-admin {
   color: #8a6500;
+
   background: rgba(255, 215, 0, 0.16);
+
   border: 1px solid rgba(255, 215, 0, 0.35);
 }
 
 .role-user {
   color: var(--accent);
+
   background: var(--accent-soft);
-  border: 1px solid var(--border);
+
+  border: 1px solid var(--line);
 }
 
 /* ============================================================
-   USER ACTIONS
-============================================================ */
+   58. USER ACTIONS
+   ============================================================ */
 
 .user-actions {
   display: flex;
+
   align-items: center;
+
   gap: 8px;
 }
 
 .user-actions button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   width: 36px;
   height: 36px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
   padding: 0;
+
   border-radius: 8px;
 }
 
@@ -1510,168 +1978,72 @@ footer strong {
 
 .user-empty {
   padding: 35px !important;
+
   text-align: center !important;
+
   color: var(--muted);
 }
 
 /* ============================================================
-   DOWNLOAD MOVIE CHECKBOX
+   59. PWA / INSTALL APP
    ============================================================ */
-
-.download-checkbox {
-  display: flex !important;
-  align-items: center;
-  width: fit-content;
-  cursor: pointer;
-  margin: 0;
-}
-
-.download-checkbox input {
-  width: 18px !important;
-  height: 18px;
-  margin: 0 10px 0 0 !important;
-  padding: 0 !important;
-  cursor: pointer;
-  accent-color: var(--accent);
-}
-
-.download-checkbox > span {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-weight: 600;
-}
-
-.download-checkbox svg {
-  font-size: 14px;
-}
-
-.download-help {
-  margin: 2px 0 12px;
-  font-size: 13px;
-  color: var(--muted);
-}
-
-/* ============================================================
-   MOVIE DOWNLOAD BUTTON
-   ============================================================ */
-
-.movie-watch {
-  border: none;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* ============================================================
-   OPTIONAL: DOWNLOAD STATUS IN ADMIN VIDEO LIST
-   ============================================================ */
-
-.admin-list article small {
-  display: block;
-}
-
-/* ============================================================
-   RECENT VIDEOS HEADER
-============================================================ */
-
-.recent-videos-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 16px;
-}
-
-.recent-videos-header h2 {
-  margin: 0;
-}
-
-/* ============================================================
-   VIDEO SEARCH
-============================================================ */
-
-.video-search {
-  position: relative;
-  width: 240px;
-  flex-shrink: 0;
-}
-
-.video-search-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--muted);
-  pointer-events: none;
-  font-size: 14px;
-}
-
-.video-search svg {
-  flex-shrink: 0;
-  color: var(--muted);
-}
-
-.video-search input {
-  width: 100%;
-  margin: 0;
-  padding-left: 36px;
-}
-
-/* ============================================================
-   RECENT VIDEO SCROLL
-============================================================ */
-
-.admin-list {
-  max-height: 500px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-right: 6px;
-}
-
-/* ============================================================
-   INSTALL APP SECTION 
-============================================================ */
 
 .install-app-section {
   width: 100%;
+
   padding: 10px 20px 30px;
 }
 
 .install-app-banner,
 .install-app-message {
   width: min(1100px, 100%);
+
   margin: 0 auto;
+
   display: flex;
+
   align-items: center;
   justify-content: space-between;
+
   gap: 20px;
+
   padding: 18px 20px;
-  border: 1px solid var(--border);
+
+  border: 1px solid var(--line);
   border-radius: 18px;
+
   background: var(--surface);
+
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
 }
 
 .install-app-content {
   display: flex;
+
   align-items: center;
+
   gap: 14px;
+
   min-width: 0;
 }
 
 .install-app-icon {
   width: 46px;
   height: 46px;
+
   flex-shrink: 0;
+
   display: flex;
+
   align-items: center;
   justify-content: center;
+
   border-radius: 13px;
+
   background: var(--accent);
+
   color: white;
+
   font-size: 18px;
   font-weight: 700;
 }
@@ -1679,17 +2051,22 @@ footer strong {
 .install-app-text h3,
 .install-app-message h3 {
   margin: 0 0 4px;
+
+  color: var(--text);
+
   font-size: 16px;
   font-weight: 700;
-  color: var(--text);
 }
 
 .install-app-text p,
 .install-app-message p {
   margin: 0;
-  font-size: 13px;
-  line-height: 1.5;
+
   color: var(--muted);
+
+  font-size: 13px;
+
+  line-height: 1.5;
 }
 
 .install-app-message p {
@@ -1698,23 +2075,26 @@ footer strong {
 
 .install-app-actions {
   display: flex;
+
   align-items: center;
+
   gap: 10px;
+
   flex-shrink: 0;
 }
 
 .install-app-button {
-  border: none;
   padding: 10px 17px;
+
+  border: none;
   border-radius: 10px;
+
   background: var(--accent);
+
   color: white;
+
   font-size: 13px;
   font-weight: 700;
-  cursor: pointer;
-  transition:
-    transform 0.2s ease,
-    opacity 0.2s ease;
 }
 
 .install-app-button:hover {
@@ -1728,40 +2108,53 @@ footer strong {
 .install-app-close {
   width: 34px;
   height: 34px;
-  border: none;
-  background: transparent;
-  color: var(--muted);
-  font-size: 22px;
-  line-height: 1;
-  cursor: pointer;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
+
+  border: none;
   border-radius: 8px;
+
+  background: transparent;
+
+  color: var(--muted);
+
+  font-size: 22px;
+
+  line-height: 1;
 }
 
 .install-app-close:hover {
   background: var(--surface-2);
 }
 
+/* ============================================================
+   60. TOAST ANIMATION
+   ============================================================ */
+
 @keyframes toastIn {
   from {
     opacity: 0;
+
     transform: translateX(30px);
   }
 
   to {
     opacity: 1;
+
     transform: translateX(0);
   }
 }
 
-/* =========================================
-   TABLET / MOBILE
-========================================= */
+/* ============================================================
+   61. TABLET — 800px
+   ============================================================ */
 
 @media (max-width: 800px) {
+  /* Header */
+
   .desktop-search {
     display: none;
   }
@@ -1778,9 +2171,17 @@ footer strong {
     margin-right: auto;
   }
 
+  /* Home */
+
   .heading {
     padding-top: 28px;
   }
+
+  .count {
+    display: none;
+  }
+
+  /* Video grid */
 
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1788,9 +2189,7 @@ footer strong {
     gap: 14px;
   }
 
-  .count {
-    display: none;
-  }
+  /* Admin */
 
   .admin-grid,
   .admin-management {
@@ -1805,23 +2204,30 @@ footer strong {
     align-items: flex-start;
   }
 
+  /* Admin video list */
+
   .admin-list article {
     grid-template-columns:
-      48px
+      58px
       minmax(0, 1fr)
+      auto
       auto;
   }
 
-  .admin-list article button:last-child {
-    grid-column: 3;
-  }
+  /* Authentication */
 
   .auth-page {
     min-height: calc(100vh - 62px);
   }
 }
 
+/* ============================================================
+   62. MOBILE — 700px
+   ============================================================ */
+
 @media (max-width: 700px) {
+  /* Movie page */
+
   .movie-card {
     grid-template-columns: 1fr;
 
@@ -1843,8 +2249,12 @@ footer strong {
   .movie-actions {
     justify-content: center;
   }
+
+  /* User management */
+
   .user-management-header {
     align-items: stretch;
+
     flex-direction: column;
   }
 
@@ -1854,6 +2264,7 @@ footer strong {
 
   .user-management-toolbar {
     align-items: stretch;
+
     flex-direction: column;
   }
 
@@ -1870,14 +2281,48 @@ footer strong {
   }
 }
 
+/* ============================================================
+   63. MOBILE — 600px
+   ============================================================ */
+
 @media (max-width: 600px) {
+  /* Toast */
+
   .toast {
     top: 76px;
+
     left: 16px;
     right: 16px;
+
     min-width: 0;
     max-width: none;
   }
+
+  /* Download settings */
+
+  .download-settings {
+    padding: 13px;
+  }
+
+  .download-type-option {
+    padding: 11px;
+  }
+
+  .video-form-actions {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  .video-form-actions .primary {
+    width: 100%;
+  }
+
+  .video-form-actions > button:not(.primary) {
+    width: 100%;
+  }
+
+  /* PWA install banner */
 
   .install-app-section {
     padding: 8px 14px 24px;
@@ -1886,7 +2331,9 @@ footer strong {
   .install-app-banner,
   .install-app-message {
     padding: 16px;
+
     border-radius: 16px;
+
     gap: 12px;
   }
 
@@ -1897,6 +2344,7 @@ footer strong {
   .install-app-icon {
     width: 42px;
     height: 42px;
+
     border-radius: 11px;
   }
 
@@ -1916,27 +2364,71 @@ footer strong {
 
   .install-app-button {
     padding: 9px 12px;
+
     font-size: 12px;
   }
 
   .install-app-close {
     width: 30px;
     height: 30px;
+
     font-size: 20px;
   }
+
+  /* Movie buttons */
+
+  .movie-watch {
+    max-width: 100%;
+  }
 }
+
+/* ============================================================
+   64. MOBILE — 500px
+   ============================================================ */
 
 @media (max-width: 500px) {
   .name-fields {
     grid-template-columns: 1fr;
   }
+
+  /* Admin recent video poster */
+
+  .admin-list article {
+    grid-template-columns:
+      52px
+      minmax(0, 1fr)
+      auto
+      auto;
+
+    gap: 10px;
+  }
+
+  .admin-video-poster {
+    width: 52px;
+    height: 66px;
+  }
+
+  .admin-download-badge {
+    top: 4px;
+    right: 4px;
+
+    width: 21px;
+    height: 21px;
+  }
+
+  .admin-download-badge svg {
+    width: 10px;
+    height: 10px;
+  }
 }
 
-/* =========================================
-   SMALL MOBILE
-========================================= */
+/* ============================================================
+   65. SMALL MOBILE — 420px
+   ============================================================ */
 
 @media (max-width: 420px) {
+  /* Container */
+
   .container {
     width: min(calc(100% - 22px), 1180px);
   }
@@ -1944,6 +2436,8 @@ footer strong {
   .nav {
     width: calc(100% - 22px);
   }
+
+  /* Brand */
 
   .brand {
     font-size: 1.15rem;
@@ -1954,11 +2448,15 @@ footer strong {
     height: 38px;
   }
 
+  /* Pagination */
+
   .pagination button {
     min-width: 36px;
 
     padding: 0 9px;
   }
+
+  /* Admin top */
 
   .admin-top {
     align-items: flex-start;
@@ -1970,6 +2468,8 @@ footer strong {
     width: 100%;
   }
 
+  /* Admin users */
+
   .admin-user {
     flex-direction: column;
   }
@@ -1977,6 +2477,8 @@ footer strong {
   .admin-user .danger {
     width: 100%;
   }
+
+  /* Header actions */
 
   .user-btn,
   .theme-btn {
@@ -1987,6 +2489,8 @@ footer strong {
   .actions {
     gap: 6px;
   }
+
+  /* Movie page */
 
   .movie-page {
     padding-top: 24px;

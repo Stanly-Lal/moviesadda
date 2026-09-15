@@ -70,7 +70,14 @@ const emptyVideo = {
   title: "",
   posterUrl: "",
   videoUrl: "",
+
+  downloadable: false,
+
   downloadOnly: false,
+
+  downloadType: "direct",
+
+  downloadUrl: "",
 };
 
 // ============================================================
@@ -88,6 +95,7 @@ const emptyUser = {
 
 export default function Admin() {
   const nav = useNavigate();
+
   const { logout } = useAuth();
 
   // ==========================================================
@@ -211,16 +219,71 @@ export default function Admin() {
     setError("");
     setMsg("");
 
+    const videoUrl = form.videoUrl.trim();
+
+    const downloadUrl = form.downloadUrl.trim();
+
+    // ========================================================
+    // WATCH URL
+    //
+    // Required unless Download Only is enabled.
+    // ========================================================
+
+    if (!form.downloadOnly && !videoUrl) {
+      setError("Please enter a video / watch URL, or select Download Only.");
+
+      return;
+    }
+
+    // ========================================================
+    // DOWNLOAD URL
+    // ========================================================
+
+    if (form.downloadable && !downloadUrl) {
+      setError("Please enter a download URL.");
+
+      return;
+    }
+
+    // ========================================================
+    // DOWNLOAD ONLY
+    // ========================================================
+
+    if (form.downloadOnly && !form.downloadable) {
+      setError("Download-only mode requires downloads to be enabled.");
+
+      return;
+    }
+
     try {
       await request(edit ? `/api/videos/${edit}` : "/api/videos", {
         method: edit ? "PATCH" : "POST",
 
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          title: form.title.trim(),
+
+          posterUrl: form.posterUrl.trim(),
+
+          videoUrl: form.downloadOnly ? "" : videoUrl,
+
+          downloadable: form.downloadable,
+
+          downloadOnly: form.downloadOnly,
+
+          // IMPORTANT:
+          // Preserve direct/page exactly.
+          downloadType: form.downloadType,
+
+          downloadUrl: form.downloadable ? downloadUrl : "",
+        }),
       });
 
       const wasEditing = Boolean(edit);
 
-      setForm(emptyVideo);
+      setForm({
+        ...emptyVideo,
+      });
+
       setEdit(null);
 
       setMsg(
@@ -259,6 +322,76 @@ export default function Admin() {
   }
 
   // ==========================================================
+  // EDIT VIDEO
+  // ==========================================================
+
+  function openEditVideo(video) {
+    setEdit(video._id);
+
+    // ========================================================
+    // LEGACY RECORD
+    // ========================================================
+
+    const isLegacyDownloadOnly =
+      typeof video.downloadable !== "boolean" && video.downloadOnly === true;
+
+    // ========================================================
+    // DOWNLOADABLE
+    // ========================================================
+
+    const downloadable =
+      typeof video.downloadable === "boolean"
+        ? video.downloadable
+        : Boolean(video.downloadOnly);
+
+    // ========================================================
+    // DOWNLOAD ONLY
+    // ========================================================
+
+    const downloadOnly = Boolean(video.downloadOnly) || isLegacyDownloadOnly;
+
+    // ========================================================
+    // DOWNLOAD TYPE
+    // ========================================================
+
+    const downloadType = video.downloadType === "page" ? "page" : "direct";
+
+    // ========================================================
+    // DOWNLOAD URL
+    // ========================================================
+
+    const downloadUrl =
+      video.downloadUrl || (isLegacyDownloadOnly ? video.videoUrl || "" : "");
+
+    // ========================================================
+    // WATCH URL
+    // ========================================================
+
+    const videoUrl = downloadOnly ? "" : video.videoUrl || "";
+
+    setForm({
+      title: video.title || "",
+
+      posterUrl: video.posterUrl || "",
+
+      videoUrl,
+
+      downloadable,
+
+      downloadOnly,
+
+      downloadType,
+
+      downloadUrl,
+    });
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
+  // ==========================================================
   // ADD ADMIN
   // ==========================================================
 
@@ -285,7 +418,9 @@ export default function Admin() {
       });
 
       setAdminEmail("");
+
       setAdminPassword("");
+
       setShowAdminPassword(false);
 
       setMsg("New admin created successfully");
@@ -322,7 +457,7 @@ export default function Admin() {
   }
 
   // ==========================================================
-  // CHANGE CURRENT PASSWORD
+  // CHANGE PASSWORD
   // ==========================================================
 
   async function changePassword(e) {
@@ -349,16 +484,21 @@ export default function Admin() {
 
         body: JSON.stringify({
           currentPassword,
+
           newPassword,
         }),
       });
 
       setCurrentPassword("");
+
       setNewPassword("");
+
       setConfirmPassword("");
 
       setShowCurrentPassword(false);
+
       setShowNewPassword(false);
+
       setShowConfirmPassword(false);
 
       setMsg("Password changed successfully");
@@ -368,13 +508,15 @@ export default function Admin() {
   }
 
   // ==========================================================
-  // OPEN ADD USER FORM
+  // OPEN ADD USER
   // ==========================================================
 
   function openAddUser() {
     setEditingUser(null);
 
-    setUserForm(emptyUser);
+    setUserForm({
+      ...emptyUser,
+    });
 
     setShowUserPassword(false);
 
@@ -387,7 +529,7 @@ export default function Admin() {
   }
 
   // ==========================================================
-  // OPEN EDIT USER FORM
+  // OPEN EDIT USER
   // ==========================================================
 
   function openEditUser(user) {
@@ -424,7 +566,9 @@ export default function Admin() {
   function cancelUserForm() {
     setEditingUser(null);
 
-    setUserForm(emptyUser);
+    setUserForm({
+      ...emptyUser,
+    });
 
     setShowUserPassword(false);
 
@@ -586,6 +730,7 @@ export default function Admin() {
 
   async function handleLogout() {
     await logout();
+
     nav("/admin/login/09");
   }
 
@@ -598,7 +743,7 @@ export default function Admin() {
       <Header />
 
       {/* =====================================================
-          TOAST NOTIFICATIONS
+          TOAST
       ===================================================== */}
 
       {msg && (
@@ -653,10 +798,16 @@ export default function Admin() {
         =================================================== */}
 
         <section className="admin-grid">
-          {/* ADD / EDIT VIDEO */}
+          {/* =================================================
+              ADD / EDIT VIDEO
+          ================================================= */}
 
           <form className="panel" onSubmit={save}>
             <h2>{edit ? "Edit video" : "Add new video"}</h2>
+
+            {/* =================================================
+                VIDEO NAME
+            ================================================= */}
 
             <label>
               Video name
@@ -674,6 +825,10 @@ export default function Admin() {
               />
             </label>
 
+            {/* =================================================
+                POSTER
+            ================================================= */}
+
             <label>
               Poster URL
               <input
@@ -689,12 +844,15 @@ export default function Admin() {
               />
             </label>
 
-            <label>
-              {form.downloadOnly ? "Download URL" : "Video / destination URL"}
+            {/* =================================================
+                WATCH URL
+            ================================================= */}
 
+            <label>
+              Video / destination URL
               <input
                 type="url"
-                required
+                required={!form.downloadOnly}
                 value={form.videoUrl}
                 onChange={(e) =>
                   setForm({
@@ -702,9 +860,218 @@ export default function Admin() {
                     videoUrl: e.target.value,
                   })
                 }
-                placeholder={form.downloadOnly ? "Direct download URL" : ""}
+                disabled={form.downloadOnly}
+                placeholder={
+                  form.downloadOnly
+                    ? "Not required for Download Only"
+                    : "Video or watch destination URL"
+                }
               />
+              {form.downloadOnly && (
+                <small className="field-help">
+                  Watch URL is disabled because this video is Download Only.
+                </small>
+              )}
             </label>
+
+            {/* =================================================
+                DOWNLOAD SETTINGS
+            ================================================= */}
+
+            <div className="download-settings">
+              {/* ===============================================
+                  ENABLE DOWNLOAD
+              =============================================== */}
+
+              <label className="download-checkbox">
+                <input
+                  type="checkbox"
+                  checked={form.downloadable}
+                  onChange={(e) => {
+                    const downloadable = e.target.checked;
+
+                    setForm({
+                      ...form,
+
+                      downloadable,
+
+                      downloadOnly: downloadable ? form.downloadOnly : false,
+                    });
+                  }}
+                />
+
+                <span>
+                  <span>Enable Download</span>
+
+                  <FaDownload />
+                </span>
+              </label>
+
+              {/* ===============================================
+                  DOWNLOAD OPTIONS
+              =============================================== */}
+
+              {form.downloadable && (
+                <div className="download-options">
+                  {/* =========================================
+                      ACCESS TYPE
+                  ========================================= */}
+
+                  <div className="download-type-title">Access type</div>
+
+                  <div className="download-type-options">
+                    {/* =======================================
+                        WATCH + DOWNLOAD
+                    ======================================= */}
+
+                    <label className="download-type-option">
+                      <input
+                        type="radio"
+                        name="accessType"
+                        checked={!form.downloadOnly}
+                        onChange={() =>
+                          setForm({
+                            ...form,
+                            downloadOnly: false,
+                          })
+                        }
+                      />
+
+                      <span>
+                        <strong>Watch + Download</strong>
+
+                        <small>
+                          Users can watch the movie and download it.
+                        </small>
+                      </span>
+                    </label>
+
+                    {/* =======================================
+                        DOWNLOAD ONLY
+                    ======================================= */}
+
+                    <label className="download-type-option">
+                      <input
+                        type="radio"
+                        name="accessType"
+                        checked={form.downloadOnly}
+                        onChange={() =>
+                          setForm({
+                            ...form,
+                            downloadOnly: true,
+                            videoUrl: "",
+                          })
+                        }
+                      />
+
+                      <span>
+                        <strong>Download Only</strong>
+
+                        <small>Users will only see the Download button.</small>
+                      </span>
+                    </label>
+                  </div>
+
+                  {/* =========================================
+                      DOWNLOAD TYPE
+                  ========================================= */}
+
+                  <div className="download-type-title">Download type</div>
+
+                  <div className="download-type-options">
+                    {/* =======================================
+                        DIRECT DOWNLOAD
+                    ======================================= */}
+
+                    <label className="download-type-option">
+                      <input
+                        type="radio"
+                        name="downloadType"
+                        value="direct"
+                        checked={form.downloadType === "direct"}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            downloadType: e.target.value,
+                          })
+                        }
+                      />
+
+                      <span>
+                        <strong>Direct Download</strong>
+
+                        <small>Starts the third-party download directly.</small>
+                      </span>
+                    </label>
+
+                    {/* =======================================
+                        DOWNLOAD PAGE
+                    ======================================= */}
+
+                    <label className="download-type-option">
+                      <input
+                        type="radio"
+                        name="downloadType"
+                        value="page"
+                        checked={form.downloadType === "page"}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            downloadType: e.target.value,
+                          })
+                        }
+                      />
+
+                      <span>
+                        <strong>Download Page</strong>
+
+                        <small>Opens the third-party download page.</small>
+                      </span>
+                    </label>
+                  </div>
+
+                  {/* =========================================
+                      DOWNLOAD URL
+                  ========================================= */}
+
+                  <label className="download-url-label">
+                    Download URL
+                    <input
+                      type="url"
+                      required={form.downloadable}
+                      value={form.downloadUrl}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          downloadUrl: e.target.value,
+                        })
+                      }
+                      placeholder={
+                        form.downloadType === "direct"
+                          ? "Third-party direct download URL"
+                          : "Third-party download page URL"
+                      }
+                    />
+                  </label>
+                </div>
+              )}
+
+              {/* =============================================
+                  HELP TEXT
+              ============================================= */}
+
+              <p className="download-help">
+                {!form.downloadable
+                  ? "Watch only — users can watch the movie and no Download button will be shown."
+                  : form.downloadOnly
+                    ? form.downloadType === "page"
+                      ? "Download only — users will open the third-party download page."
+                      : "Download only — users will start a direct third-party download."
+                    : form.downloadType === "page"
+                      ? "Watch + Download Page — users can watch the movie and open the third-party download page."
+                      : "Watch + Direct Download — users can watch the movie and start a direct download."}
+              </p>
+            </div>
 
             {/* =================================================
                 VIDEO ACTIONS
@@ -715,46 +1082,26 @@ export default function Admin() {
                 {edit ? "Save changes" : "Add video"}
               </button>
 
-              <label className="download-checkbox">
-                <input
-                  type="checkbox"
-                  checked={form.downloadOnly}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      downloadOnly: e.target.checked,
-                    })
-                  }
-                />
-
-                <span>
-                  <span>Download</span>
-                  <FaDownload />
-                </span>
-              </label>
-
               {edit && (
                 <button
                   type="button"
                   onClick={() => {
                     setEdit(null);
 
-                    setForm(emptyVideo);
+                    setForm({
+                      ...emptyVideo,
+                    });
                   }}
                 >
                   Cancel
                 </button>
               )}
             </div>
-
-            <p className="download-help">
-              {form.downloadOnly
-                ? "This movie will only be available for download."
-                : "Users will be able to watch this movie online."}
-            </p>
           </form>
 
-          {/* VIDEO LIST */}
+          {/* =================================================
+              RECENT VIDEOS
+          ================================================= */}
 
           <section className="panel">
             <div className="recent-videos-header">
@@ -780,48 +1127,93 @@ export default function Admin() {
                     : "No videos found."}
                 </p>
               ) : (
-                filteredVideos.map((v) => (
-                  <article key={v._id}>
-                    <img src={v.posterUrl} alt="" />
+                filteredVideos.map((v) => {
+                  const isLegacyDownloadOnly =
+                    typeof v.downloadable !== "boolean" &&
+                    v.downloadOnly === true;
 
-                    <div>
-                      <strong>{v.title}</strong>
+                  const isDownloadable =
+                    typeof v.downloadable === "boolean"
+                      ? v.downloadable
+                      : Boolean(v.downloadOnly);
 
-                      <small>
-                        {v.downloadOnly ? "Download" : "Watch"}
-                        {" • "}
-                        {new Date(v.createdAt).toLocaleDateString()}
-                      </small>
-                    </div>
+                  const isDownloadOnly =
+                    Boolean(v.downloadOnly) || isLegacyDownloadOnly;
 
-                    <button
-                      onClick={() => {
-                        setEdit(v._id);
+                  let accessLabel = "Watch";
 
-                        setForm({
-                          title: v.title,
+                  if (isDownloadable) {
+                    if (isDownloadOnly) {
+                      accessLabel =
+                        v.downloadType === "page"
+                          ? "Download Only • Page"
+                          : "Download Only • Direct";
+                    } else {
+                      accessLabel =
+                        v.downloadType === "page"
+                          ? "Watch + Download Page"
+                          : "Watch + Direct Download";
+                    }
+                  }
 
-                          posterUrl: v.posterUrl,
+                  return (
+                    <article key={v._id}>
+                      {/* ========================================
+                            POSTER
+                        ======================================== */}
 
-                          videoUrl: v.videoUrl,
+                      <div className="admin-video-poster">
+                        <img src={v.posterUrl} alt="" />
 
-                          downloadOnly: Boolean(v.downloadOnly),
-                        });
+                        {isDownloadable && (
+                          <span
+                            className="admin-download-badge"
+                            title={
+                              isDownloadOnly
+                                ? "Download only"
+                                : v.downloadType === "page"
+                                  ? "Download page enabled"
+                                  : "Direct download enabled"
+                            }
+                          >
+                            <FaDownload />
+                          </span>
+                        )}
+                      </div>
 
-                        window.scrollTo({
-                          top: 0,
-                          behavior: "smooth",
-                        });
-                      }}
-                    >
-                      Edit
-                    </button>
+                      {/* ========================================
+                            INFO
+                        ======================================== */}
 
-                    <button className="danger" onClick={() => delVideo(v._id)}>
-                      Delete
-                    </button>
-                  </article>
-                ))
+                      <div className="admin-video-info">
+                        <strong>{v.title}</strong>
+
+                        <small>
+                          {accessLabel}
+                          {" • "}
+                          {new Date(v.createdAt).toLocaleDateString()}
+                        </small>
+                      </div>
+
+                      {/* ========================================
+                            EDIT
+                        ======================================== */}
+
+                      <button onClick={() => openEditVideo(v)}>Edit</button>
+
+                      {/* ========================================
+                            DELETE
+                        ======================================== */}
+
+                      <button
+                        className="danger"
+                        onClick={() => delVideo(v._id)}
+                      >
+                        Delete
+                      </button>
+                    </article>
+                  );
+                })
               )}
             </div>
           </section>
@@ -832,7 +1224,9 @@ export default function Admin() {
         =================================================== */}
 
         <section className="admin-management">
-          {/* CHANGE PASSWORD */}
+          {/* =================================================
+              CHANGE PASSWORD
+          ================================================= */}
 
           <form className="panel" onSubmit={changePassword}>
             <h2>Change My Password</h2>
@@ -922,7 +1316,9 @@ export default function Admin() {
             </button>
           </form>
 
-          {/* ADD ADMIN */}
+          {/* =================================================
+              ADD ADMIN
+          ================================================= */}
 
           <form className="panel" onSubmit={addAdmin}>
             <h2>Add New Admin</h2>
@@ -971,7 +1367,9 @@ export default function Admin() {
             </button>
           </form>
 
-          {/* ADMIN LIST */}
+          {/* =================================================
+              ADMIN LIST
+          ================================================= */}
 
           <section className="panel admin-panel">
             <h2>Administrators</h2>
@@ -1034,7 +1432,9 @@ export default function Admin() {
             </button>
           </div>
 
-          {/* ADD / EDIT USER */}
+          {/* =================================================
+              ADD / EDIT USER
+          ================================================= */}
 
           {userFormOpen && (
             <form className="user-form" onSubmit={saveUser}>
@@ -1156,7 +1556,9 @@ export default function Admin() {
             </form>
           )}
 
-          {/* SEARCH */}
+          {/* =================================================
+              SEARCH
+          ================================================= */}
 
           <div className="user-management-toolbar">
             <div className="user-search">
@@ -1176,17 +1578,24 @@ export default function Admin() {
             </span>
           </div>
 
-          {/* USER TABLE */}
+          {/* =================================================
+              USER TABLE
+          ================================================= */}
 
           <div className="user-table-wrap">
             <table className="user-table">
               <thead>
                 <tr>
                   <th>User</th>
+
                   <th>Email</th>
+
                   <th>Role</th>
+
                   <th>State</th>
+
                   <th>Added</th>
+
                   <th>Actions</th>
                 </tr>
               </thead>

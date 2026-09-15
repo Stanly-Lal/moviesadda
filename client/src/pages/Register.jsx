@@ -139,7 +139,7 @@ export default function Register() {
               type={showPassword ? "text" : "password"}
               required
               minLength={10}
-              placeholder="Password (minimum 10 characters)"
+              placeholder="Password (min 10 characters)"
               value={form.password}
               onChange={(e) => update("password", e.target.value)}
             />

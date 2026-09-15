@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { GiPlayButton } from "react-icons/gi";
 
 export default function InstallApp() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -119,7 +120,7 @@ export default function InstallApp() {
       <section className="install-app-section">
         <div className="install-app-message">
           <div className="install-app-content">
-            <div className="install-app-icon">▶</div>
+            <div className="install-app-icon"><GiPlayButton /></div>
 
             <div>
               <h3>MoviesAdda</h3>

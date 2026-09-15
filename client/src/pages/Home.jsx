@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Header from "../components/Header";
 import VideoCard from "../components/VideoCard";
 import Pagination from "../components/Pagination";
+import InstallApp from "../components/InstallApp";
 import Footer from "../components/Footer";
 
 import { request } from "../services/api";
@@ -247,7 +248,7 @@ export default function Home() {
           <div className="empty">No videos found.</div>
         )}
       </main>
-
+      <InstallApp />
       <Footer />
     </>
   );

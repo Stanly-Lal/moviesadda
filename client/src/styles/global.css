@@ -1631,6 +1631,120 @@ footer strong {
   padding-right: 6px;
 }
 
+/* ============================================================
+   INSTALL APP SECTION 
+============================================================ */
+
+.install-app-section {
+  width: 100%;
+  padding: 10px 20px 30px;
+}
+
+.install-app-banner,
+.install-app-message {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.install-app-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.install-app-icon {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 13px;
+  background: var(--accent);
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.install-app-text h3,
+.install-app-message h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.install-app-text p,
+.install-app-message p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.install-app-message p {
+  max-width: 700px;
+}
+
+.install-app-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.install-app-button {
+  border: none;
+  padding: 10px 17px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.install-app-button:hover {
+  transform: translateY(-1px);
+}
+
+.install-app-button:active {
+  transform: translateY(0);
+}
+
+.install-app-close {
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.install-app-close:hover {
+  background: var(--surface-2);
+}
+
 @keyframes toastIn {
   from {
     opacity: 0;
@@ -1761,9 +1875,54 @@ footer strong {
     top: 76px;
     left: 16px;
     right: 16px;
-
     min-width: 0;
     max-width: none;
+  }
+
+  .install-app-section {
+    padding: 8px 14px 24px;
+  }
+
+  .install-app-banner,
+  .install-app-message {
+    padding: 16px;
+    border-radius: 16px;
+    gap: 12px;
+  }
+
+  .install-app-content {
+    align-items: flex-start;
+  }
+
+  .install-app-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 11px;
+  }
+
+  .install-app-text h3,
+  .install-app-message h3 {
+    font-size: 14px;
+  }
+
+  .install-app-text p,
+  .install-app-message p {
+    font-size: 12px;
+  }
+
+  .install-app-actions {
+    gap: 4px;
+  }
+
+  .install-app-button {
+    padding: 9px 12px;
+    font-size: 12px;
+  }
+
+  .install-app-close {
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
   }
 }
 

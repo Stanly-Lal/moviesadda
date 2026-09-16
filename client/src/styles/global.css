@@ -1,9 +1,6 @@
 /* ============================================================
-
    MOVIESADDA
-
    GLOBAL STYLESHEET
-
    ============================================================ */
 
 /* ============================================================
@@ -393,36 +390,65 @@ h1 {
    ============================================================ */
 
 .pagination {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 7px;
   padding: 38px 0 10px;
+  overflow: hidden;
 }
 
 .pagination button {
   min-width: 40px;
+  width: auto;
   height: 40px;
+  flex: 0 0 auto;
   padding: 0 12px;
   border: 1px solid var(--line);
   border-radius: 10px;
   background: var(--surface);
   color: var(--text);
+  white-space: nowrap;
+  font-size: 14px;
 }
 
 .pagination button:hover:not(:disabled) {
   border-color: var(--accent);
+  color: var(--accent);
 }
 
-.pagination button:disabled {
-  opacity: 0.45;
+.pagination button:active:not(:disabled) {
+  transform: scale(0.96);
 }
 
 .pagination .active {
   background: var(--accent) !important;
   color: white !important;
   border-color: var(--accent) !important;
+}
+
+.pagination .pagination-ellipsis {
+  min-width: 40px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.pagination .pagination-ellipsis:hover:not(:disabled) {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.pagination-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination-label {
+  display: inline;
 }
 
 /* ============================================================
@@ -1985,7 +2011,6 @@ footer strong {
       minmax(0, 1fr)
       auto
       auto;
-
     gap: 10px;
   }
 
@@ -2012,12 +2037,7 @@ footer strong {
    ============================================================ */
 
 @media (max-width: 450px) {
-  /* ==========================================================
-     MOVIE ACTION BUTTONS
-
-     At 450px and below, all movie actions use the full
-     available width and stack vertically.
-     ========================================================== */
+  /* Movie action buttons */
 
   .movie-actions {
     width: 100%;
@@ -2069,13 +2089,6 @@ footer strong {
     height: 38px;
   }
 
-  /* Pagination */
-
-  .pagination button {
-    min-width: 36px;
-    padding: 0 9px;
-  }
-
   /* Admin top */
 
   .admin-top {
@@ -2113,5 +2126,170 @@ footer strong {
 
   .movie-page {
     padding-top: 24px;
+  }
+}
+
+/* ============================================================
+   68. RESPONSIVE PAGINATION — 872px
+   ============================================================ */
+
+@media (max-width: 872px) {
+  .pagination {
+    gap: 5px;
+  }
+
+  .pagination button {
+    min-width: 38px;
+    height: 38px;
+    padding: 0 9px;
+  }
+
+  .pagination .pagination-ellipsis {
+    min-width: 30px;
+    padding: 0 4px;
+  }
+}
+
+/* ============================================================
+   69. COMPACT PAGINATION — 600px
+   ============================================================ */
+
+@media (max-width: 600px) {
+  .pagination {
+    gap: 4px;
+    padding-top: 30px;
+  }
+
+  .pagination button {
+    min-width: 36px;
+    width: 36px;
+    height: 38px;
+    padding: 0 5px;
+    border-radius: 9px;
+    font-size: 13px;
+  }
+
+  .pagination-label {
+    display: none;
+  }
+
+  .pagination-prev,
+  .pagination-next {
+    min-width: 36px !important;
+    width: 36px;
+    padding: 0 !important;
+  }
+
+  .pagination .pagination-ellipsis {
+    min-width: 26px;
+    width: 26px;
+    padding: 0 !important;
+    font-size: 16px;
+  }
+}
+
+/* ============================================================
+   70. VERY SMALL PAGINATION — 450px
+   ============================================================ */
+
+@media (max-width: 450px) {
+  .pagination {
+    gap: 3px;
+    padding-top: 26px;
+  }
+
+  .pagination button {
+    min-width: 34px;
+    width: 34px;
+    height: 36px;
+    padding: 0 3px;
+    border-radius: 8px;
+    font-size: 13px;
+  }
+
+  .pagination-prev,
+  .pagination-next {
+    min-width: 34px !important;
+    width: 34px;
+    padding: 0 !important;
+  }
+
+  .pagination .pagination-ellipsis {
+    min-width: 24px;
+    width: 24px;
+    padding: 0 !important;
+    font-size: 15px;
+  }
+}
+
+/* ============================================================
+   71. EXTREMELY SMALL SCREENS — 360px
+   ============================================================ */
+
+@media (max-width: 360px) {
+  .pagination {
+    gap: 3px;
+  }
+
+  .pagination button {
+    min-width: 32px;
+    width: 32px;
+    height: 35px;
+    padding: 0;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+
+  .pagination-prev,
+  .pagination-next {
+    min-width: 32px !important;
+    width: 32px;
+    padding: 0 !important;
+  }
+
+  .pagination .pagination-ellipsis {
+    min-width: 21px;
+    width: 21px;
+    padding: 0 !important;
+    font-size: 14px;
+  }
+}
+
+/* ============================================================
+   72. ULTRA SMALL SCREENS — 320px
+   ============================================================ */
+
+@media (max-width: 320px) {
+  .pagination {
+    gap: 2px;
+    width: 100%;
+    padding-top: 24px;
+  }
+
+  .pagination button {
+    min-width: 30px;
+    width: 30px;
+    height: 34px;
+    padding: 0;
+    border-radius: 7px;
+    font-size: 12px;
+  }
+
+  .pagination-prev,
+  .pagination-next {
+    min-width: 30px !important;
+    width: 30px;
+    padding: 0 !important;
+  }
+
+  .pagination .pagination-ellipsis {
+    min-width: 19px;
+    width: 19px;
+    padding: 0 !important;
+    font-size: 14px;
+  }
+
+  .pagination-arrow {
+    font-size: 15px;
   }
 }

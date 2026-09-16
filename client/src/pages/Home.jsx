@@ -120,7 +120,7 @@ export default function Home() {
     setLoading(true);
     setError("");
 
-    request(`/api/videos?page=${page}&limit=12&q=${encodeURIComponent(q)}`)
+    request(`/api/videos?page=${page}&limit=24&q=${encodeURIComponent(q)}`)
       .then((result) => {
         if (live) {
           setData(result);

@@ -94,14 +94,8 @@ export default function Home() {
 
         sessionStorage.setItem("homePage", "1");
 
-        // Search starts at top
+        // Search should go to top when the new results arrive
         navigationRef.current = "top";
-
-        window.scrollTo({
-          top: 0,
-          left: 0,
-          behavior: "auto",
-        });
 
         setQ(search);
       }
@@ -145,7 +139,7 @@ export default function Home() {
   }, [page, q]);
 
   // ==========================================================
-  // RESTORE / PAGINATION SCROLL
+  // SCROLL / NAVIGATION CONTROL
   // ==========================================================
 
   useLayoutEffect(() => {
@@ -161,6 +155,8 @@ export default function Home() {
 
     // ========================================================
     // PREV / NEXT
+    //
+    // Keep exact current scroll position.
     // ========================================================
 
     if (typeof navigation === "object" && navigation.type === "preserve") {
@@ -168,24 +164,15 @@ export default function Home() {
 
       navigationRef.current = "normal";
 
-      // Force browser to stop using its own restored position
       window.history.scrollRestoration = "manual";
 
-      // Immediately restore exact position
       window.scrollTo(0, exactScrollPosition);
 
-      // Restore again after browser layout
       requestAnimationFrame(() => {
         window.scrollTo(0, exactScrollPosition);
 
-        // Restore after the next paint
         requestAnimationFrame(() => {
           window.scrollTo(0, exactScrollPosition);
-
-          // Final safety restore
-          setTimeout(() => {
-            window.scrollTo(0, exactScrollPosition);
-          }, 0);
         });
       });
 
@@ -194,10 +181,20 @@ export default function Home() {
 
     // ========================================================
     // DIRECT PAGE / ELLIPSIS
+    //
+    // IMPORTANT:
+    //
+    // We DO NOT scroll when the button is clicked.
+    //
+    // We wait until the new page data has arrived.
+    // useLayoutEffect then moves to the top before the
+    // browser paints the new page.
     // ========================================================
 
     if (navigation === "top") {
       navigationRef.current = "normal";
+
+      window.history.scrollRestoration = "manual";
 
       window.scrollTo({
         top: 0,
@@ -221,6 +218,8 @@ export default function Home() {
 
       navigationRef.current = "normal";
 
+      window.history.scrollRestoration = "manual";
+
       window.scrollTo({
         top: targetPosition,
         left: 0,
@@ -241,17 +240,21 @@ export default function Home() {
     // ========================================================
 
     if (navigationType === "top") {
+      // IMPORTANT:
+      //
+      // Do NOT scroll here.
+      //
+      // The old page must stay exactly where it is while
+      // the new page is being fetched.
+      //
+      // Once the new page arrives, useLayoutEffect will move
+      // to the top before the new content is painted.
+
       navigationRef.current = "top";
 
       sessionStorage.setItem("homePage", String(newPage));
 
       sessionStorage.setItem(getScrollKey(newPage, q), "0");
-
-      window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: "auto",
-      });
 
       setPage(newPage);
 
@@ -263,31 +266,15 @@ export default function Home() {
     // ========================================================
 
     if (navigationType === "preserve") {
-      // ======================================================
-      // CAPTURE THE EXACT CURRENT POSITION
-      // ======================================================
-
+      // Capture exact current position
       const exactScrollPosition = window.scrollY;
-
-      // ======================================================
-      // TELL THE REST OF THE APP THAT THIS IS A
-      // SCROLL-PRESERVING NAVIGATION
-      // ======================================================
 
       navigationRef.current = {
         type: "preserve",
         scrollPosition: exactScrollPosition,
       };
 
-      // ======================================================
-      // STORE DESTINATION PAGE
-      // ======================================================
-
       sessionStorage.setItem("homePage", String(newPage));
-
-      // ======================================================
-      // CHANGE PAGE
-      // ======================================================
 
       setPage(newPage);
     }
@@ -300,16 +287,6 @@ export default function Home() {
   return (
     <>
       <Header search={search} setSearch={setSearch} />
-
-      {/* ====================================================
-          HOME CONTAINER
-
-          overflowAnchor: none prevents Chrome from trying
-          to automatically adjust the scroll position when
-          the number of cards/rows changes between pages.
-          This is especially important when moving from the
-          shorter last page back to a full 16-card page.
-          ==================================================== */}
 
       <main
         className="container home-container"
@@ -330,13 +307,10 @@ export default function Home() {
         {error && <div className="notice error">{error}</div>}
 
         {/* ==================================================
-            IMPORTANT:
+            KEEP THE CURRENT GRID DURING LOADING
 
-            Keep the existing grid visible while a new page
-            is loading.
-
-            This prevents the document height from collapsing
-            during Prev/Next navigation.
+            This is important for Prev/Next because it prevents
+            the document height from collapsing.
             ================================================== */}
 
         {loading && !data.items.length ? (

@@ -89,13 +89,17 @@ export default function Home() {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (search !== q) {
-        // New search starts on page 1
         setPage(1);
 
         sessionStorage.setItem("homePage", "1");
 
-        // Search should go to top when the new results arrive
         navigationRef.current = "top";
+
+        window.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: "auto",
+        });
 
         setQ(search);
       }
@@ -139,7 +143,7 @@ export default function Home() {
   }, [page, q]);
 
   // ==========================================================
-  // SCROLL / NAVIGATION CONTROL
+  // RESTORE / PAGINATION SCROLL
   // ==========================================================
 
   useLayoutEffect(() => {
@@ -155,8 +159,6 @@ export default function Home() {
 
     // ========================================================
     // PREV / NEXT
-    //
-    // Keep exact current scroll position.
     // ========================================================
 
     if (typeof navigation === "object" && navigation.type === "preserve") {
@@ -173,6 +175,10 @@ export default function Home() {
 
         requestAnimationFrame(() => {
           window.scrollTo(0, exactScrollPosition);
+
+          setTimeout(() => {
+            window.scrollTo(0, exactScrollPosition);
+          }, 0);
         });
       });
 
@@ -181,14 +187,6 @@ export default function Home() {
 
     // ========================================================
     // DIRECT PAGE / ELLIPSIS
-    //
-    // IMPORTANT:
-    //
-    // We DO NOT scroll when the button is clicked.
-    //
-    // We wait until the new page data has arrived.
-    // useLayoutEffect then moves to the top before the
-    // browser paints the new page.
     // ========================================================
 
     if (navigation === "top") {
@@ -199,7 +197,7 @@ export default function Home() {
       window.scrollTo({
         top: 0,
         left: 0,
-        behavior: "auto",
+        behavior: "smooth",
       });
 
       return;
@@ -240,21 +238,15 @@ export default function Home() {
     // ========================================================
 
     if (navigationType === "top") {
-      // IMPORTANT:
-      //
-      // Do NOT scroll here.
-      //
-      // The old page must stay exactly where it is while
-      // the new page is being fetched.
-      //
-      // Once the new page arrives, useLayoutEffect will move
-      // to the top before the new content is painted.
-
       navigationRef.current = "top";
 
       sessionStorage.setItem("homePage", String(newPage));
 
       sessionStorage.setItem(getScrollKey(newPage, q), "0");
+
+      // Do NOT scroll here.
+      // The new page loads first, then useLayoutEffect
+      // smoothly scrolls to the top.
 
       setPage(newPage);
 
@@ -266,7 +258,6 @@ export default function Home() {
     // ========================================================
 
     if (navigationType === "preserve") {
-      // Capture exact current position
       const exactScrollPosition = window.scrollY;
 
       navigationRef.current = {
@@ -305,13 +296,6 @@ export default function Home() {
         </div>
 
         {error && <div className="notice error">{error}</div>}
-
-        {/* ==================================================
-            KEEP THE CURRENT GRID DURING LOADING
-
-            This is important for Prev/Next because it prevents
-            the document height from collapsing.
-            ================================================== */}
 
         {loading && !data.items.length ? (
           <div className="empty">Loading videos…</div>

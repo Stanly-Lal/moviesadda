@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import Header from "../components/Header";
 import VideoCard from "../components/VideoCard";
@@ -37,10 +37,10 @@ export default function Home() {
   const [error, setError] = useState("");
 
   // ==========================================================
-  // RESTORE CONTROL
+  // NAVIGATION / RESTORE CONTROL
   // ==========================================================
 
-  const hasRestoredRef = useRef(false);
+  const navigationRef = useRef("restore");
 
   // ==========================================================
   // BROWSER SCROLL RESTORATION
@@ -95,19 +95,21 @@ export default function Home() {
         sessionStorage.setItem("homePage", "1");
 
         // Search starts at top
-        hasRestoredRef.current = true;
+        navigationRef.current = "top";
 
         window.scrollTo({
           top: 0,
           left: 0,
-          behavior: "instant",
+          behavior: "auto",
         });
 
         setQ(search);
       }
     }, 350);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+    };
   }, [search, q]);
 
   // ==========================================================
@@ -143,10 +145,10 @@ export default function Home() {
   }, [page, q]);
 
   // ==========================================================
-  // RESTORE SCROLL POSITION
+  // RESTORE / PAGINATION SCROLL
   // ==========================================================
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (loading) {
       return;
     }
@@ -155,51 +157,140 @@ export default function Home() {
       return;
     }
 
-    if (hasRestoredRef.current) {
+    const navigation = navigationRef.current;
+
+    // ========================================================
+    // PREV / NEXT
+    // ========================================================
+
+    if (typeof navigation === "object" && navigation.type === "preserve") {
+      const exactScrollPosition = navigation.scrollPosition;
+
+      navigationRef.current = "normal";
+
+      // Force browser to stop using its own restored position
+      window.history.scrollRestoration = "manual";
+
+      // Immediately restore exact position
+      window.scrollTo(0, exactScrollPosition);
+
+      // Restore again after browser layout
+      requestAnimationFrame(() => {
+        window.scrollTo(0, exactScrollPosition);
+
+        // Restore after the next paint
+        requestAnimationFrame(() => {
+          window.scrollTo(0, exactScrollPosition);
+
+          // Final safety restore
+          setTimeout(() => {
+            window.scrollTo(0, exactScrollPosition);
+          }, 0);
+        });
+      });
+
       return;
     }
 
-    const key = getScrollKey(page, q);
+    // ========================================================
+    // DIRECT PAGE / ELLIPSIS
+    // ========================================================
 
-    const savedPosition = sessionStorage.getItem(key);
+    if (navigation === "top") {
+      navigationRef.current = "normal";
 
-    const targetPosition = savedPosition !== null ? Number(savedPosition) : 0;
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "auto",
+      });
 
-    // Mark as restored before scrolling
-    hasRestoredRef.current = true;
+      return;
+    }
 
-    // Instant restoration for:
-    // Refresh
-    // Movie → Back
-    window.scrollTo({
-      top: targetPosition,
-      left: 0,
-      behavior: "instant",
-    });
+    // ========================================================
+    // REFRESH / BACK RESTORATION
+    // ========================================================
+
+    if (navigation === "restore") {
+      const key = getScrollKey(page, q);
+
+      const savedPosition = sessionStorage.getItem(key);
+
+      const targetPosition = savedPosition !== null ? Number(savedPosition) : 0;
+
+      navigationRef.current = "normal";
+
+      window.scrollTo({
+        top: targetPosition,
+        left: 0,
+        behavior: "auto",
+      });
+
+      return;
+    }
   }, [loading, data.items, page, q]);
 
   // ==========================================================
   // PAGINATION
   // ==========================================================
 
-  function handlePageChange(newPage) {
-    // Save new page
-    sessionStorage.setItem("homePage", String(newPage));
+  function handlePageChange(newPage, navigationType = "top") {
+    // ========================================================
+    // DIRECT PAGE / ELLIPSIS
+    // ========================================================
 
-    // New page starts at top
-    sessionStorage.setItem(getScrollKey(newPage, q), "0");
+    if (navigationType === "top") {
+      navigationRef.current = "top";
 
-    // Don't restore previous page position
-    hasRestoredRef.current = true;
+      sessionStorage.setItem("homePage", String(newPage));
 
-    setPage(newPage);
+      sessionStorage.setItem(getScrollKey(newPage, q), "0");
 
-    // Smooth scroll ONLY for pagination
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: "smooth",
-    });
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "auto",
+      });
+
+      setPage(newPage);
+
+      return;
+    }
+
+    // ========================================================
+    // PREV / NEXT
+    // ========================================================
+
+    if (navigationType === "preserve") {
+      // ======================================================
+      // CAPTURE THE EXACT CURRENT POSITION
+      // ======================================================
+
+      const exactScrollPosition = window.scrollY;
+
+      // ======================================================
+      // TELL THE REST OF THE APP THAT THIS IS A
+      // SCROLL-PRESERVING NAVIGATION
+      // ======================================================
+
+      navigationRef.current = {
+        type: "preserve",
+        scrollPosition: exactScrollPosition,
+      };
+
+      // ======================================================
+      // STORE DESTINATION PAGE
+      // ======================================================
+
+      sessionStorage.setItem("homePage", String(newPage));
+
+      // ======================================================
+      // CHANGE PAGE
+      // ======================================================
+
+      setPage(newPage);
+    }
   }
 
   // ==========================================================
@@ -210,7 +301,22 @@ export default function Home() {
     <>
       <Header search={search} setSearch={setSearch} />
 
-      <main className="container">
+      {/* ====================================================
+          HOME CONTAINER
+
+          overflowAnchor: none prevents Chrome from trying
+          to automatically adjust the scroll position when
+          the number of cards/rows changes between pages.
+          This is especially important when moving from the
+          shorter last page back to a full 16-card page.
+          ==================================================== */}
+
+      <main
+        className="container home-container"
+        style={{
+          overflowAnchor: "none",
+        }}
+      >
         <div className="heading">
           <div>
             <p className="eyebrow">Movies Gallery</p>
@@ -223,7 +329,17 @@ export default function Home() {
 
         {error && <div className="notice error">{error}</div>}
 
-        {loading ? (
+        {/* ==================================================
+            IMPORTANT:
+
+            Keep the existing grid visible while a new page
+            is loading.
+
+            This prevents the document height from collapsing
+            during Prev/Next navigation.
+            ================================================== */}
+
+        {loading && !data.items.length ? (
           <div className="empty">Loading videos…</div>
         ) : data.items.length ? (
           <>
@@ -248,7 +364,9 @@ export default function Home() {
           <div className="empty">No videos found.</div>
         )}
       </main>
+
       <InstallApp />
+
       <Footer />
     </>
   );

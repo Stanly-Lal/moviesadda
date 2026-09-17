@@ -143,6 +143,10 @@ export default function Pagination({ page, total, onChange }) {
     return getSiblingCount(window.innerWidth);
   });
 
+  // ==========================================================
+  // RESPONSIVE PAGINATION
+  // ==========================================================
+
   useEffect(() => {
     function handleResize() {
       setSiblingCount(getSiblingCount(window.innerWidth));
@@ -155,19 +159,55 @@ export default function Pagination({ page, total, onChange }) {
     };
   }, []);
 
+  // ==========================================================
+  // HIDE PAGINATION
+  // ==========================================================
+
   if (total <= 1) {
     return null;
   }
 
   const visiblePages = getPages(page, total, siblingCount);
 
+  // ==========================================================
+  // DIRECT PAGE SELECTION
+  // ==========================================================
+
+  function handlePageChange(targetPage) {
+    /*
+      Page numbers and ellipsis always go to the top.
+    */
+
+    onChange(targetPage, "top");
+  }
+
+  // ==========================================================
+  // PREV / NEXT
+  // ==========================================================
+
+  function handleNavigationChange(targetPage) {
+    /*
+      Prev and Next preserve the current scroll position.
+    */
+
+    onChange(targetPage, "preserve");
+  }
+
+  // ==========================================================
+  // RENDER
+  // ==========================================================
+
   return (
     <nav className="pagination" aria-label="Pagination">
+      {/* ====================================================
+          PREVIOUS
+          ==================================================== */}
+
       <button
         type="button"
         className="pagination-prev"
         disabled={page === 1}
-        onClick={() => onChange(page - 1)}
+        onClick={() => handleNavigationChange(page - 1)}
         aria-label="Go to previous page"
       >
         <span className="pagination-arrow">←</span>
@@ -175,7 +215,15 @@ export default function Pagination({ page, total, onChange }) {
         <span className="pagination-label">Prev</span>
       </button>
 
+      {/* ====================================================
+          PAGE NUMBERS / ELLIPSIS
+          ==================================================== */}
+
       {visiblePages.map((item, index) => {
+        // ==================================================
+        // ELLIPSIS
+        // ==================================================
+
         if (typeof item === "object") {
           const targetPage = getEllipsisTarget(page, total, item.direction);
 
@@ -184,7 +232,7 @@ export default function Pagination({ page, total, onChange }) {
               key={`${item.direction}-${index}`}
               type="button"
               className="pagination-ellipsis"
-              onClick={() => onChange(targetPage)}
+              onClick={() => handlePageChange(targetPage)}
               aria-label={
                 item.direction === "left"
                   ? `Go backward to page ${targetPage}`
@@ -201,12 +249,16 @@ export default function Pagination({ page, total, onChange }) {
           );
         }
 
+        // ==================================================
+        // NORMAL PAGE NUMBER
+        // ==================================================
+
         return (
           <button
             key={item}
             type="button"
             className={item === page ? "active" : ""}
-            onClick={() => onChange(item)}
+            onClick={() => handlePageChange(item)}
             aria-current={item === page ? "page" : undefined}
             aria-label={`Go to page ${item}`}
           >
@@ -215,11 +267,15 @@ export default function Pagination({ page, total, onChange }) {
         );
       })}
 
+      {/* ====================================================
+          NEXT
+          ==================================================== */}
+
       <button
         type="button"
         className="pagination-next"
         disabled={page === total}
-        onClick={() => onChange(page + 1)}
+        onClick={() => handleNavigationChange(page + 1)}
         aria-label="Go to next page"
       >
         <span className="pagination-label">Next</span>

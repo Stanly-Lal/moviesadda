@@ -1730,6 +1730,20 @@ footer strong {
 }
 
 /* ============================================================
+   HOME PAGE SCROLL ANCHORING
+
+   Prevent the browser from automatically changing the scroll
+   position when the number of cards/rows changes between
+   pagination pages.
+
+   This is intentionally scoped to the Home page only.
+   ============================================================ */
+
+.home-container {
+  overflow-anchor: none;
+}
+
+/* ============================================================
    60. TOAST ANIMATION
    ============================================================ */
 

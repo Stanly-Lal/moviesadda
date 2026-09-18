@@ -11,16 +11,18 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Account from "./pages/Account";
 import Movie from "./pages/Movie";
+import MoviePlayer from "./pages/MoviePlayer";
 
 import ProtectedRoute from "./components/ProtectedRoute";
-import TempVideo from "./pages/TempVideo";
 
 export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
         <Routes>
-          {/* PUBLIC */}
+          {/* ==================================================
+              PUBLIC
+              ================================================== */}
 
           <Route path="/" element={<Home />} />
 
@@ -28,22 +30,29 @@ export default function App() {
 
           <Route path="/register" element={<Register />} />
 
-          {/* ADMIN */}
+          {/* ==================================================
+              ADMIN
+              ================================================== */}
 
           <Route path="/admin/login/09" element={<AdminLogin />} />
 
           <Route path="/admin" element={<Admin />} />
 
-          {/* PROTECTED USER AREA */}
+          {/* ==================================================
+              PROTECTED USER AREA
+              ================================================== */}
 
           <Route element={<ProtectedRoute />}>
             <Route path="/movie/:id" element={<Movie />} />
 
+            <Route path="/movieplayer/:id" element={<MoviePlayer />} />
+
             <Route path="/account" element={<Account />} />
-            <Route path="/temp" element={<TempVideo />} />
           </Route>
 
-          {/* FALLBACK */}
+          {/* ==================================================
+              FALLBACK
+              ================================================== */}
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

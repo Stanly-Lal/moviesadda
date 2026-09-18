@@ -105,17 +105,10 @@ export default function Movie() {
 
     // ========================================================
     // DOWNLOAD PAGE
-    //
-    // IMPORTANT:
-    // This is checked BEFORE direct download.
     // ========================================================
 
     if (movie.downloadType === "page") {
       showDownloadMessage("Getting download page...");
-
-      // ------------------------------------------------------
-      // Redirect to the third-party download page.
-      // ------------------------------------------------------
 
       window.setTimeout(() => {
         window.location.assign(movie.downloadUrl);
@@ -130,11 +123,6 @@ export default function Movie() {
 
     if (movie.downloadType === "direct") {
       showDownloadMessage("Download started...");
-
-      // ------------------------------------------------------
-      // Hidden iframe keeps MoviesAdda open while requesting
-      // the third-party direct download.
-      // ------------------------------------------------------
 
       const iframe = document.createElement("iframe");
 
@@ -161,7 +149,15 @@ export default function Movie() {
       return;
     }
 
-    window.location.assign(movie.videoUrl);
+    // ========================================================
+    // IMPORTANT
+    //
+    // We now send the MOVIE ID to MoviePlayer.
+    //
+    // MoviePlayer will fetch the videoUrl from the database.
+    // ========================================================
+
+    nav(`/movieplayer/${id}`);
   }
 
   // ==========================================================
@@ -185,7 +181,7 @@ export default function Movie() {
 
       {/* =====================================================
           DOWNLOAD TOAST
-      ===================================================== */}
+          ===================================================== */}
 
       {downloadMessage && (
         <div className="toast toast-success">
@@ -206,19 +202,19 @@ export default function Movie() {
       <main className="movie-page container">
         {/* ===================================================
             LOADING
-        =================================================== */}
+            =================================================== */}
 
         {loading && <div className="empty">Loading movie…</div>}
 
         {/* ===================================================
             ERROR
-        =================================================== */}
+            =================================================== */}
 
         {error && <div className="notice error">{error}</div>}
 
         {/* ===================================================
             MOVIE
-        =================================================== */}
+            =================================================== */}
 
         {movie && (
           <article className="movie-card">
@@ -243,9 +239,7 @@ export default function Movie() {
               <div className="movie-actions">
                 {/* =============================================
                     WATCH MOVIE
-
-                    Only shown when a real Watch URL exists.
-                ============================================= */}
+                    ============================================= */}
 
                 {hasWatchUrl && (
                   <button
@@ -260,7 +254,7 @@ export default function Movie() {
 
                 {/* =============================================
                     DOWNLOAD MOVIE
-                ============================================= */}
+                    ============================================= */}
 
                 {movie.downloadable && movie.downloadUrl && (
                   <button
@@ -269,16 +263,13 @@ export default function Movie() {
                     onClick={handleDownload}
                   >
                     <FaDownload />
-
-                    {movie.downloadType === "page"
-                      ? "Download Movie"
-                      : "Download Movie"}
+                    Download Movie
                   </button>
                 )}
 
                 {/* =============================================
                     BACK
-                ============================================= */}
+                    ============================================= */}
 
                 <Link className="movie-back" to="/">
                   ← Back to Movies

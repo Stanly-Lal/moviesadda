@@ -13,6 +13,7 @@ import Account from "./pages/Account";
 import Movie from "./pages/Movie";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import TempVideo from "./pages/TempVideo";
 
 export default function App() {
   return (
@@ -39,6 +40,7 @@ export default function App() {
             <Route path="/movie/:id" element={<Movie />} />
 
             <Route path="/account" element={<Account />} />
+            <Route path="/temp" element={<TempVideo />} />
           </Route>
 
           {/* FALLBACK */}

@@ -306,14 +306,20 @@ export async function list(req, res, next) {
 
 export async function adminList(req, res, next) {
   try {
-    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 24));
+    const query = Video.find({}).sort({
+      createdAt: -1,
+    });
 
-    const items = await Video.find({})
-      .sort({
-        createdAt: -1,
-      })
-      .limit(limit)
-      .lean();
+    if (req.query.limit) {
+      const limit = Math.min(
+        100,
+        Math.max(1, parseInt(req.query.limit) || 100),
+      );
+
+      query.limit(limit);
+    }
+
+    const items = await query.lean();
 
     res.json({
       items: items.map(normalizeVideo),

@@ -189,7 +189,8 @@ export default function Admin() {
 
   async function load() {
     try {
-      const videos = await request("/api/videos/admin?limit=24");
+      const videos = await request("/api/videos/admin");
+      // const videos = await request("/api/videos/admin?limit=24");  // FOR LIMITING THE LIST TO 24 VIDEOS LATER IF NEEDED #######
 
       const adminData = await request("/api/auth/admins");
 
@@ -1100,12 +1101,12 @@ export default function Admin() {
           </form>
 
           {/* =================================================
-              RECENT VIDEOS
+              ALL VIDEOS
           ================================================= */}
 
           <section className="panel">
             <div className="recent-videos-header">
-              <h2>Recent videos</h2>
+              <h2>All videos</h2>
 
               <div className="video-search">
                 <FaSearch className="video-search-icon" />

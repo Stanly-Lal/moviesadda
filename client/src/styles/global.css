@@ -1394,22 +1394,15 @@ footer strong {
 
 .movie-card {
   display: grid;
-
   grid-template-columns:
     minmax(240px, 360px)
     minmax(0, 1fr);
-
   align-items: center;
-
   gap: 42px;
-
   padding: 28px;
-
   background: var(--surface);
-
   border: 1px solid var(--line);
   border-radius: 22px;
-
   box-shadow: var(--shadow);
 }
 
@@ -2560,6 +2553,12 @@ footer strong {
   .admin-download-badge svg {
     width: 10px;
     height: 10px;
+  }
+  .movie-poster {
+    width: min(260px, 100%);
+  }
+  .movie-page {
+    padding-bottom: 10px;
   }
 }
 

@@ -156,6 +156,7 @@ export default function MoviePlayer() {
         allowFullScreen
         allow="fullscreen; autoplay; encrypted-media; picture-in-picture"
         referrerPolicy="no-referrer"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock"
       />
     </div>
   );

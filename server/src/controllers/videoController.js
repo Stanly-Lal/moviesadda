@@ -2,6 +2,26 @@ import validator from "validator";
 import Video from "../models/Video.js";
 
 // ============================================================
+// BOOLEAN HELPER
+// ============================================================
+
+function toBoolean(value, fallback = false) {
+  if (typeof value === "boolean") {
+    return value;
+  }
+
+  if (value === "true") {
+    return true;
+  }
+
+  if (value === "false") {
+    return false;
+  }
+
+  return fallback;
+}
+
+// ============================================================
 // CLEAN / VALIDATE VIDEO DATA
 // ============================================================
 
@@ -17,6 +37,18 @@ function clean(payload) {
 
   const downloadOnly =
     payload.downloadOnly === true || payload.downloadOnly === "true";
+
+  // ==========================================================
+  // PLAYER SETTINGS
+  // ==========================================================
+
+  const sandboxEnabled = toBoolean(payload.sandboxEnabled, false);
+
+  const orientationLock = toBoolean(payload.orientationLock, false);
+
+  // ==========================================================
+  // DOWNLOAD TYPE
+  // ==========================================================
 
   let downloadType = String(payload.downloadType || "direct").trim();
 
@@ -57,13 +89,7 @@ function clean(payload) {
   // ==========================================================
   // VIDEO / WATCH URL
   //
-  // Required when:
-  //
-  // downloadable = false
-  // OR
-  // downloadOnly = false
-  //
-  // Not required for Download Only.
+  // Required unless this is a Download Only video.
   // ==========================================================
 
   if (!downloadOnly) {
@@ -87,11 +113,6 @@ function clean(payload) {
   // ==========================================================
 
   if (downloadable) {
-    // --------------------------------------------------------
-    // Download URL is always required when downloads are
-    // enabled.
-    // --------------------------------------------------------
-
     if (!downloadUrl) {
       throw Object.assign(
         new Error("Download URL is required when downloads are enabled"),
@@ -163,6 +184,14 @@ function clean(payload) {
     downloadType,
 
     downloadUrl: downloadable ? downloadUrl : "",
+
+    // ========================================================
+    // PLAYER SETTINGS
+    // ========================================================
+
+    sandboxEnabled,
+
+    orientationLock,
   };
 }
 
@@ -182,18 +211,10 @@ function normalizeVideo(video) {
   // ==========================================================
   // LEGACY VIDEO DETECTION
   //
-  // IMPORTANT FIX:
+  // IMPORTANT:
   //
   // We ONLY treat a record as legacy when the new
   // "downloadable" field does NOT exist as a boolean.
-  //
-  // This prevents NEW videos with:
-  //
-  // downloadable: true
-  // downloadOnly: true
-  // downloadType: "page"
-  //
-  // from being incorrectly converted to "direct".
   // ==========================================================
 
   const isLegacyDownloadOnly =
@@ -217,6 +238,16 @@ function normalizeVideo(video) {
     // their old videoUrl as a Watch URL.
     normalized.videoUrl = "";
 
+    // ========================================================
+    // PLAYER SETTINGS
+    //
+    // Legacy videos have both settings disabled.
+    // ========================================================
+
+    normalized.sandboxEnabled = false;
+
+    normalized.orientationLock = false;
+
     return normalized;
   }
 
@@ -237,6 +268,20 @@ function normalizeVideo(video) {
   normalized.downloadUrl = normalized.downloadUrl || "";
 
   normalized.videoUrl = normalized.videoUrl || "";
+
+  // ==========================================================
+  // PLAYER SETTINGS
+  // ==========================================================
+
+  normalized.sandboxEnabled =
+    typeof normalized.sandboxEnabled === "boolean"
+      ? normalized.sandboxEnabled
+      : false;
+
+  normalized.orientationLock =
+    typeof normalized.orientationLock === "boolean"
+      ? normalized.orientationLock
+      : false;
 
   return normalized;
 }
@@ -264,7 +309,7 @@ export async function list(req, res, next) {
     const [items, total] = await Promise.all([
       Video.find(filter)
         .select(
-          "_id title posterUrl createdAt videoUrl downloadable downloadOnly downloadType downloadUrl",
+          "_id title posterUrl createdAt videoUrl downloadable downloadOnly downloadType downloadUrl sandboxEnabled orientationLock",
         )
         .sort(
           q

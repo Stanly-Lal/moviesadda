@@ -16,12 +16,6 @@ const videoSchema = new mongoose.Schema(
       trim: true,
     },
 
-    // ==========================================================
-    // WATCH / DESTINATION URL
-    //
-    // Empty when the video is DOWNLOAD ONLY.
-    // ==========================================================
-
     videoUrl: {
       type: String,
       trim: true,
@@ -37,27 +31,10 @@ const videoSchema = new mongoose.Schema(
       default: false,
     },
 
-    // ==========================================================
-    // DOWNLOAD ONLY
-    //
-    // true  = Watch button is hidden
-    // false = Watch button can be shown
-    //
-    // IMPORTANT:
-    // This field is now used by the NEW system as well.
-    // ==========================================================
-
     downloadOnly: {
       type: Boolean,
       default: false,
     },
-
-    // ==========================================================
-    // DOWNLOAD TYPE
-    //
-    // direct = third-party direct download
-    // page   = third-party download page
-    // ==========================================================
 
     downloadType: {
       type: String,
@@ -65,14 +42,33 @@ const videoSchema = new mongoose.Schema(
       default: "direct",
     },
 
-    // ==========================================================
-    // DOWNLOAD URL
-    // ==========================================================
-
     downloadUrl: {
       type: String,
       trim: true,
       default: "",
+    },
+
+    // ==========================================================
+    // PLAYER SETTINGS
+    //
+    // These are independent settings for each video.
+    //
+    // sandboxEnabled:
+    // Controls whether the iframe receives a sandbox attribute.
+    //
+    // orientationLock:
+    // Controls whether the iframe receives the
+    // "orientation-lock" permission.
+    // ==========================================================
+
+    sandboxEnabled: {
+      type: Boolean,
+      default: false,
+    },
+
+    orientationLock: {
+      type: Boolean,
+      default: false,
     },
   },
 
@@ -80,10 +76,6 @@ const videoSchema = new mongoose.Schema(
     timestamps: true,
   },
 );
-
-// ============================================================
-// SEARCH INDEX
-// ============================================================
 
 videoSchema.index({
   title: "text",

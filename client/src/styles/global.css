@@ -2196,6 +2196,118 @@ footer strong {
 }
 
 /* ============================================================
+   PLAYER SETTINGS
+   ============================================================ */
+
+.player-settings {
+  margin: 18px 0 6px;
+
+  padding: 16px;
+
+  border: 1px solid var(--line);
+
+  border-radius: 14px;
+
+  background: var(--bg);
+}
+
+.player-settings-title {
+  margin-bottom: 12px;
+
+  color: var(--text);
+
+  font-size: 0.9rem;
+
+  font-weight: 700;
+}
+
+.player-settings-description {
+  margin: 0 0 14px;
+
+  color: var(--muted);
+
+  font-size: 13px;
+
+  line-height: 1.5;
+}
+
+.player-settings-options {
+  display: grid;
+
+  gap: 10px;
+}
+
+.player-setting-option {
+  display: flex !important;
+
+  align-items: flex-start;
+
+  width: 100%;
+
+  margin: 0 !important;
+
+  padding: 12px;
+
+  border: 1px solid var(--line);
+
+  border-radius: 10px;
+
+  background: var(--surface);
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.player-setting-option:hover {
+  border-color: var(--accent);
+}
+
+.player-setting-option input {
+  width: 18px !important;
+
+  height: 18px;
+
+  flex: 0 0 18px;
+
+  margin: 2px 10px 0 0 !important;
+
+  padding: 0 !important;
+
+  accent-color: var(--accent);
+
+  cursor: pointer;
+}
+
+.player-setting-option > span {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+
+  min-width: 0;
+}
+
+.player-setting-option strong {
+  color: var(--text);
+
+  font-size: 0.88rem;
+}
+
+.player-setting-option small {
+  color: var(--muted);
+
+  font-size: 0.78rem;
+
+  font-weight: 400;
+
+  line-height: 1.4;
+}
+
+/* ============================================================
    65. TOAST ANIMATION
    ============================================================ */
 
@@ -2481,6 +2593,15 @@ footer strong {
     padding: 0 !important;
 
     font-size: 16px;
+  }
+  /* Player settings */
+
+  .player-settings {
+    padding: 13px;
+  }
+
+  .player-setting-option {
+    padding: 11px;
   }
 }
 

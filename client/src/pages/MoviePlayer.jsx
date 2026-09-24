@@ -110,7 +110,7 @@ export default function MoviePlayer() {
   }
 
   // ==========================================================
-  // VIDEO URL CHECK
+  // VIDEO NOT AVAILABLE
   // ==========================================================
 
   if (!movie.videoUrl) {
@@ -126,15 +126,48 @@ export default function MoviePlayer() {
   }
 
   // ==========================================================
+  // PLAYER SETTINGS
+  // ==========================================================
+
+  const sandboxEnabled = movie.sandboxEnabled === true;
+
+  const orientationLock = movie.orientationLock === true;
+
+  // ==========================================================
+  // IFRAME ALLOW PERMISSIONS
+  //
+  // orientation-lock is added ONLY when enabled for this
+  // particular video.
+  // ==========================================================
+
+  const allowAttribute = [
+    "fullscreen",
+    "autoplay",
+    "encrypted-media",
+    "picture-in-picture",
+    ...(orientationLock ? ["orientation-lock"] : []),
+  ].join("; ");
+
+  // ==========================================================
+  // SANDBOX ATTRIBUTE
+  //
+  // When sandboxEnabled = false, the sandbox attribute is
+  // completely omitted.
+  //
+  // This is important because some third-party players can
+  // break when placed inside a sandboxed iframe.
+  // ==========================================================
+
+  const sandboxAttribute = sandboxEnabled
+    ? "allow-scripts allow-same-origin allow-forms allow-pointer-lock"
+    : undefined;
+
+  // ==========================================================
   // PLAYER
   // ==========================================================
 
   return (
     <div className="movie-player-page">
-      {/* =====================================================
-          BACK BUTTON
-          ===================================================== */}
-
       <button
         type="button"
         className="player-back-button"
@@ -144,19 +177,15 @@ export default function MoviePlayer() {
         ←
       </button>
 
-      {/* =====================================================
-          VIDEO IFRAME
-          ===================================================== */}
-
       <iframe
         src={movie.videoUrl}
         title={movie.title || "Movie Player"}
         className="movie-player-iframe"
         frameBorder="0"
         allowFullScreen
-        allow="fullscreen; autoplay; encrypted-media; picture-in-picture"
+        allow={allowAttribute}
         referrerPolicy="no-referrer"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock"
+        sandbox={sandboxAttribute}
       />
     </div>
   );

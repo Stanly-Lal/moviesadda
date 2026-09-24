@@ -78,6 +78,14 @@ const emptyVideo = {
   downloadType: "direct",
 
   downloadUrl: "",
+
+  // ==========================================================
+  // PLAYER SETTINGS
+  // ==========================================================
+
+  sandboxEnabled: false,
+
+  orientationLock: false,
 };
 
 // ============================================================
@@ -190,7 +198,9 @@ export default function Admin() {
   async function load() {
     try {
       const videos = await request("/api/videos/admin");
-      // const videos = await request("/api/videos/admin?limit=24");  // FOR LIMITING THE LIST TO 24 VIDEOS LATER IF NEEDED #######
+
+      // const videos = await request("/api/videos/admin?limit=24");
+      // FOR LIMITING THE LIST TO 24 VIDEOS LATER IF NEEDED
 
       const adminData = await request("/api/auth/admins");
 
@@ -276,6 +286,14 @@ export default function Admin() {
           downloadType: form.downloadType,
 
           downloadUrl: form.downloadable ? downloadUrl : "",
+
+          // ==================================================
+          // PLAYER SETTINGS
+          // ==================================================
+
+          sandboxEnabled: form.sandboxEnabled,
+
+          orientationLock: form.orientationLock,
         }),
       });
 
@@ -370,6 +388,17 @@ export default function Admin() {
 
     const videoUrl = downloadOnly ? "" : video.videoUrl || "";
 
+    // ========================================================
+    // PLAYER SETTINGS
+    //
+    // Existing videos that do not contain these fields will
+    // automatically use false.
+    // ========================================================
+
+    const sandboxEnabled = Boolean(video.sandboxEnabled);
+
+    const orientationLock = Boolean(video.orientationLock);
+
     setForm({
       title: video.title || "",
 
@@ -384,6 +413,10 @@ export default function Admin() {
       downloadType,
 
       downloadUrl,
+
+      sandboxEnabled,
+
+      orientationLock,
     });
 
     window.scrollTo({
@@ -876,6 +909,74 @@ export default function Admin() {
             </label>
 
             {/* =================================================
+                PLAYER SETTINGS
+            ================================================= */}
+
+            <div className="player-settings">
+              <div className="player-settings-title">Player Settings</div>
+
+              <p className="player-settings-description">
+                These settings apply only to this video. Some third-party
+                players may not work correctly inside a sandbox, so enable it
+                only when needed.
+              </p>
+
+              <div className="player-settings-options">
+                {/* =============================================
+                    IFRAME SANDBOX
+                ============================================= */}
+
+                <label className="player-setting-option">
+                  <input
+                    type="checkbox"
+                    checked={form.sandboxEnabled}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        sandboxEnabled: e.target.checked,
+                      })
+                    }
+                  />
+
+                  <span>
+                    <strong>Enable iframe sandbox</strong>
+
+                    <small>
+                      Restricts what the embedded player can do inside the
+                      iframe.
+                    </small>
+                  </span>
+                </label>
+
+                {/* =============================================
+                    ORIENTATION LOCK
+                ============================================= */}
+
+                <label className="player-setting-option">
+                  <input
+                    type="checkbox"
+                    checked={form.orientationLock}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        orientationLock: e.target.checked,
+                      })
+                    }
+                  />
+
+                  <span>
+                    <strong>Enable landscape orientation permission</strong>
+
+                    <small>
+                      Allows the embedded player to request screen orientation
+                      locking when supported by the browser and player.
+                    </small>
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            {/* =================================================
                 DOWNLOAD SETTINGS
             ================================================= */}
 
@@ -1160,8 +1261,8 @@ export default function Admin() {
                   return (
                     <article key={v._id}>
                       {/* ========================================
-                            POSTER
-                        ======================================== */}
+                          POSTER
+                      ======================================== */}
 
                       <div className="admin-video-poster">
                         <img src={v.posterUrl} alt="" />
@@ -1183,8 +1284,8 @@ export default function Admin() {
                       </div>
 
                       {/* ========================================
-                            INFO
-                        ======================================== */}
+                          INFO
+                      ======================================== */}
 
                       <div className="admin-video-info">
                         <strong>{v.title}</strong>
@@ -1197,14 +1298,14 @@ export default function Admin() {
                       </div>
 
                       {/* ========================================
-                            EDIT
-                        ======================================== */}
+                          EDIT
+                      ======================================== */}
 
                       <button onClick={() => openEditVideo(v)}>Edit</button>
 
                       {/* ========================================
-                            DELETE
-                        ======================================== */}
+                          DELETE
+                      ======================================== */}
 
                       <button
                         className="danger"

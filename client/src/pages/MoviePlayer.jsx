@@ -123,6 +123,8 @@ export default function MoviePlayer() {
   // ==========================================================
 
   const allowAttribute = [
+    "accelerometer",
+    "gyroscope",
     "fullscreen",
     "autoplay",
     "encrypted-media",

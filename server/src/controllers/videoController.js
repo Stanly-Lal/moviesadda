@@ -22,6 +22,16 @@ function toBoolean(value, fallback = false) {
 }
 
 // ============================================================
+// REFERRER POLICY HELPER
+// ============================================================
+
+function normalizeReferrerPolicy(value) {
+  return value === "strict-origin-when-cross-origin"
+    ? "strict-origin-when-cross-origin"
+    : "no-referrer";
+}
+
+// ============================================================
 // CLEAN / VALIDATE VIDEO DATA
 // ============================================================
 
@@ -45,6 +55,8 @@ function clean(payload) {
   const sandboxEnabled = toBoolean(payload.sandboxEnabled, false);
 
   const orientationLock = toBoolean(payload.orientationLock, false);
+
+  const referrerPolicy = normalizeReferrerPolicy(payload.referrerPolicy);
 
   // ==========================================================
   // DOWNLOAD TYPE
@@ -192,6 +204,8 @@ function clean(payload) {
     sandboxEnabled,
 
     orientationLock,
+
+    referrerPolicy,
   };
 }
 
@@ -240,13 +254,14 @@ function normalizeVideo(video) {
 
     // ========================================================
     // PLAYER SETTINGS
-    //
-    // Legacy videos have both settings disabled.
     // ========================================================
 
     normalized.sandboxEnabled = false;
 
     normalized.orientationLock = false;
+
+    // Legacy records have no referrer-policy setting.
+    normalized.referrerPolicy = "no-referrer";
 
     return normalized;
   }
@@ -283,6 +298,10 @@ function normalizeVideo(video) {
       ? normalized.orientationLock
       : false;
 
+  normalized.referrerPolicy = normalizeReferrerPolicy(
+    normalized.referrerPolicy,
+  );
+
   return normalized;
 }
 
@@ -309,7 +328,7 @@ export async function list(req, res, next) {
     const [items, total] = await Promise.all([
       Video.find(filter)
         .select(
-          "_id title posterUrl createdAt videoUrl downloadable downloadOnly downloadType downloadUrl sandboxEnabled orientationLock",
+          "_id title posterUrl createdAt videoUrl downloadable downloadOnly downloadType downloadUrl sandboxEnabled orientationLock referrerPolicy",
         )
         .sort(
           q

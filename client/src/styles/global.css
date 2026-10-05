@@ -2060,12 +2060,6 @@ footer strong {
 
 /* ============================================================
    61. HOME PAGE SCROLL ANCHORING
-   ============================================================
-
-   Important for the current Home pagination logic.
-
-   Prevents the browser from automatically adjusting scroll
-   position when the number of cards/rows changes between pages.
    ============================================================ */
 
 .home-container {
@@ -2196,33 +2190,114 @@ footer strong {
 }
 
 /* ============================================================
-   PLAYER SETTINGS
+   65. PLAYER SETTINGS — COLLAPSIBLE
    ============================================================ */
 
 .player-settings {
   margin: 18px 0 6px;
 
-  padding: 16px;
+  padding: 0;
 
   border: 1px solid var(--line);
 
   border-radius: 14px;
 
   background: var(--bg);
+
+  overflow: hidden;
 }
 
-.player-settings-title {
-  margin-bottom: 12px;
+/* ============================================================
+   PLAYER SETTINGS HEADER
+   ============================================================ */
+
+.player-settings-header {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 14px;
+
+  padding: 16px;
+
+  border: none;
+
+  background: transparent;
 
   color: var(--text);
 
-  font-size: 0.9rem;
+  text-align: left;
 
+  cursor: pointer;
+}
+
+.player-settings-header:hover {
+  background: var(--accent-soft);
+}
+
+.player-settings-header > span {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.player-settings-header strong {
+  color: var(--text);
+
+  font-size: 0.95rem;
   font-weight: 700;
 }
 
+.player-settings-header small {
+  color: var(--muted);
+
+  font-size: 0.78rem;
+  font-weight: 400;
+
+  line-height: 1.4;
+}
+
+.player-settings-chevron {
+  flex: 0 0 auto;
+
+  color: var(--muted);
+
+  font-size: 13px;
+
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+
+.player-settings-header:hover .player-settings-chevron {
+  color: var(--accent);
+}
+
+.player-settings-chevron.open {
+  transform: rotate(180deg);
+
+  color: var(--accent);
+}
+
+/* ============================================================
+   PLAYER SETTINGS CONTENT
+   ============================================================ */
+
+.player-settings-content {
+  padding: 0 16px 16px;
+
+  border-top: 1px solid var(--line);
+
+  animation: playerSettingsOpen 0.2s ease;
+}
+
 .player-settings-description {
-  margin: 0 0 14px;
+  margin: 14px 0;
 
   color: var(--muted);
 
@@ -2236,6 +2311,10 @@ footer strong {
 
   gap: 10px;
 }
+
+/* ============================================================
+   PLAYER SETTING OPTION
+   ============================================================ */
 
 .player-setting-option {
   display: flex !important;
@@ -2263,6 +2342,8 @@ footer strong {
 
 .player-setting-option:hover {
   border-color: var(--accent);
+
+  background: var(--accent-soft);
 }
 
 .player-setting-option input {
@@ -2308,7 +2389,47 @@ footer strong {
 }
 
 /* ============================================================
-   65. TOAST ANIMATION
+   PLAYER REFERRER POLICY
+   ============================================================ */
+
+.player-referrer-policy {
+  display: grid;
+
+  gap: 10px;
+
+  margin-top: 4px;
+
+  padding-top: 14px;
+
+  border-top: 1px solid var(--line);
+}
+
+.player-setting-option-title {
+  color: var(--text);
+
+  font-size: 0.85rem;
+
+  font-weight: 700;
+}
+
+.player-setting-option-description {
+  margin: -4px 0 2px;
+
+  color: var(--muted);
+
+  font-size: 0.78rem;
+
+  line-height: 1.4;
+}
+
+.player-referrer-options {
+  display: grid;
+
+  gap: 10px;
+}
+
+/* ============================================================
+   66. TOAST ANIMATION
    ============================================================ */
 
 @keyframes toastIn {
@@ -2323,8 +2444,20 @@ footer strong {
   }
 }
 
+@keyframes playerSettingsOpen {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ============================================================
-   66. TABLET — 800px
+   67. TABLET — 800px
    ============================================================ */
 
 @media (max-width: 800px) {
@@ -2392,7 +2525,7 @@ footer strong {
 }
 
 /* ============================================================
-   67. MOBILE — 700px
+   68. MOBILE — 700px
    ============================================================ */
 
 @media (max-width: 700px) {
@@ -2449,7 +2582,7 @@ footer strong {
 }
 
 /* ============================================================
-   68. MOBILE — 600px
+   69. MOBILE — 600px
    ============================================================ */
 
 @media (max-width: 600px) {
@@ -2473,6 +2606,28 @@ footer strong {
 
   .download-type-option {
     padding: 11px;
+  }
+
+  /* Player settings */
+
+  .player-settings-header {
+    padding: 13px;
+  }
+
+  .player-settings-content {
+    padding: 0 13px 13px;
+  }
+
+  .player-setting-option {
+    padding: 11px;
+  }
+
+  .player-setting-option input {
+    margin-right: 9px !important;
+  }
+
+  .player-settings-header small {
+    font-size: 0.74rem;
   }
 
   /* Video form */
@@ -2594,19 +2749,10 @@ footer strong {
 
     font-size: 16px;
   }
-  /* Player settings */
-
-  .player-settings {
-    padding: 13px;
-  }
-
-  .player-setting-option {
-    padding: 11px;
-  }
 }
 
 /* ============================================================
-   69. TABLET MOVIE BUTTONS — 872px TO 701px
+   70. TABLET MOVIE BUTTONS — 872px TO 701px
    ============================================================ */
 
 @media (min-width: 701px) and (max-width: 872px) {
@@ -2638,7 +2784,7 @@ footer strong {
 }
 
 /* ============================================================
-   70. MOBILE — 500px
+   71. MOBILE — 500px
    ============================================================ */
 
 @media (max-width: 500px) {
@@ -2675,16 +2821,18 @@ footer strong {
     width: 10px;
     height: 10px;
   }
+
   .movie-poster {
     width: min(260px, 100%);
   }
+
   .movie-page {
     padding-bottom: 10px;
   }
 }
 
 /* ============================================================
-   71. SMALL MOBILE — 450px
+   72. SMALL MOBILE — 450px
    ============================================================ */
 
 @media (max-width: 450px) {
@@ -2754,7 +2902,7 @@ footer strong {
 }
 
 /* ============================================================
-   72. SMALL MOBILE — 420px
+   73. SMALL MOBILE — 420px
    ============================================================ */
 
 @media (max-width: 420px) {
@@ -2851,7 +2999,7 @@ footer strong {
 }
 
 /* ============================================================
-   73. ULTRA SMALL SCREENS — 360px
+   74. ULTRA SMALL SCREENS — 360px
    ============================================================ */
 
 @media (max-width: 360px) {
@@ -2894,7 +3042,7 @@ footer strong {
 }
 
 /* ============================================================
-   74. EXTREMELY SMALL SCREENS — 320px
+   75. EXTREMELY SMALL SCREENS — 320px
    ============================================================ */
 
 @media (max-width: 320px) {

@@ -10,6 +10,7 @@ import {
   FaEdit,
   FaTrash,
   FaDownload,
+  FaChevronDown,
 } from "react-icons/fa";
 
 import { request } from "../services/api";
@@ -86,6 +87,8 @@ const emptyVideo = {
   sandboxEnabled: false,
 
   orientationLock: false,
+
+  referrerPolicy: "no-referrer",
 };
 
 // ============================================================
@@ -117,6 +120,12 @@ export default function Admin() {
   const [form, setForm] = useState(emptyVideo);
 
   const [edit, setEdit] = useState(null);
+
+  // ==========================================================
+  // PLAYER SETTINGS ACCORDION
+  // ==========================================================
+
+  const [playerSettingsOpen, setPlayerSettingsOpen] = useState(false);
 
   // ==========================================================
   // TOAST STATES
@@ -199,9 +208,6 @@ export default function Admin() {
     try {
       const videos = await request("/api/videos/admin");
 
-      // const videos = await request("/api/videos/admin?limit=24");
-      // FOR LIMITING THE LIST TO 24 VIDEOS LATER IF NEEDED
-
       const adminData = await request("/api/auth/admins");
 
       const userData = await request("/api/auth/users");
@@ -236,8 +242,6 @@ export default function Admin() {
 
     // ========================================================
     // WATCH URL
-    //
-    // Required unless Download Only is enabled.
     // ========================================================
 
     if (!form.downloadOnly && !videoUrl) {
@@ -281,8 +285,6 @@ export default function Admin() {
 
           downloadOnly: form.downloadOnly,
 
-          // IMPORTANT:
-          // Preserve direct/page exactly.
           downloadType: form.downloadType,
 
           downloadUrl: form.downloadable ? downloadUrl : "",
@@ -294,6 +296,8 @@ export default function Admin() {
           sandboxEnabled: form.sandboxEnabled,
 
           orientationLock: form.orientationLock,
+
+          referrerPolicy: form.referrerPolicy,
         }),
       });
 
@@ -304,6 +308,8 @@ export default function Admin() {
       });
 
       setEdit(null);
+
+      setPlayerSettingsOpen(false);
 
       setMsg(
         wasEditing ? "Video updated successfully" : "Video added successfully",
@@ -348,6 +354,12 @@ export default function Admin() {
     setEdit(video._id);
 
     // ========================================================
+    // PLAYER SETTINGS START CLOSED
+    // ========================================================
+
+    setPlayerSettingsOpen(false);
+
+    // ========================================================
     // LEGACY RECORD
     // ========================================================
 
@@ -390,14 +402,16 @@ export default function Admin() {
 
     // ========================================================
     // PLAYER SETTINGS
-    //
-    // Existing videos that do not contain these fields will
-    // automatically use false.
     // ========================================================
 
     const sandboxEnabled = Boolean(video.sandboxEnabled);
 
     const orientationLock = Boolean(video.orientationLock);
+
+    const referrerPolicy =
+      video.referrerPolicy === "strict-origin-when-cross-origin"
+        ? "strict-origin-when-cross-origin"
+        : "no-referrer";
 
     setForm({
       title: video.title || "",
@@ -417,6 +431,8 @@ export default function Admin() {
       sandboxEnabled,
 
       orientationLock,
+
+      referrerPolicy,
     });
 
     window.scrollTo({
@@ -913,67 +929,182 @@ export default function Admin() {
             ================================================= */}
 
             <div className="player-settings">
-              <div className="player-settings-title">Player Settings</div>
+              {/* =================================================
+                  PLAYER SETTINGS HEADER / DROPDOWN
+              ================================================= */}
 
-              <p className="player-settings-description">
-                These settings apply only to this video. Some third-party
-                players may not work correctly inside a sandbox, so enable it
-                only when needed.
-              </p>
+              <button
+                type="button"
+                className="player-settings-header"
+                onClick={() => setPlayerSettingsOpen((prev) => !prev)}
+                aria-expanded={playerSettingsOpen}
+                aria-controls="player-settings-content"
+              >
+                <span>
+                  <strong>Player Settings</strong>
 
-              <div className="player-settings-options">
-                {/* =============================================
-                    IFRAME SANDBOX
-                ============================================= */}
+                  <small>
+                    Configure sandbox, orientation and referrer policy
+                    independently for this video.
+                  </small>
+                </span>
 
-                <label className="player-setting-option">
-                  <input
-                    type="checkbox"
-                    checked={form.sandboxEnabled}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        sandboxEnabled: e.target.checked,
-                      })
-                    }
-                  />
+                <FaChevronDown
+                  className={`player-settings-chevron ${
+                    playerSettingsOpen ? "open" : ""
+                  }`}
+                />
+              </button>
 
-                  <span>
-                    <strong>Enable iframe sandbox</strong>
+              {/* =================================================
+                  PLAYER SETTINGS CONTENT
+              ================================================= */}
 
-                    <small>
-                      Restricts what the embedded player can do inside the
-                      iframe.
-                    </small>
-                  </span>
-                </label>
+              {playerSettingsOpen && (
+                <div
+                  id="player-settings-content"
+                  className="player-settings-content"
+                >
+                  <p className="player-settings-description">
+                    These settings apply only to this video. Configure sandbox,
+                    orientation permission, and referrer policy independently
+                    depending on the embedded player.
+                  </p>
 
-                {/* =============================================
-                    ORIENTATION LOCK
-                ============================================= */}
+                  <div className="player-settings-options">
+                    {/* =============================================
+                        IFRAME SANDBOX
+                    ============================================= */}
 
-                <label className="player-setting-option">
-                  <input
-                    type="checkbox"
-                    checked={form.orientationLock}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        orientationLock: e.target.checked,
-                      })
-                    }
-                  />
+                    <label className="player-setting-option">
+                      <input
+                        type="checkbox"
+                        checked={form.sandboxEnabled}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            sandboxEnabled: e.target.checked,
+                          })
+                        }
+                      />
 
-                  <span>
-                    <strong>Enable landscape orientation permission</strong>
+                      <span>
+                        <strong>Enable iframe sandbox</strong>
 
-                    <small>
-                      Allows the embedded player to request screen orientation
-                      locking when supported by the browser and player.
-                    </small>
-                  </span>
-                </label>
-              </div>
+                        <small>
+                          Restricts what the embedded player can do inside the
+                          iframe.
+                        </small>
+                      </span>
+                    </label>
+
+                    {/* =============================================
+                        ORIENTATION LOCK
+                    ============================================= */}
+
+                    <label className="player-setting-option">
+                      <input
+                        type="checkbox"
+                        checked={form.orientationLock}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            orientationLock: e.target.checked,
+                          })
+                        }
+                      />
+
+                      <span>
+                        <strong>Enable landscape orientation permission</strong>
+
+                        <small>
+                          Allows the embedded player to request screen
+                          orientation locking when supported by the browser and
+                          player.
+                        </small>
+                      </span>
+                    </label>
+
+                    {/* =============================================
+                        REFERRER POLICY
+                    ============================================= */}
+
+                    <div className="player-referrer-policy">
+                      <div className="player-setting-option-title">
+                        Referrer Policy
+                      </div>
+
+                      <p className="player-setting-option-description">
+                        Controls what referrer information is sent to the
+                        embedded player. Choose the option required by the video
+                        provider.
+                      </p>
+
+                      <div className="player-referrer-options">
+                        {/* =========================================
+                            NO REFERRER
+                        ========================================= */}
+
+                        <label className="player-setting-option">
+                          <input
+                            type="radio"
+                            name="referrerPolicy"
+                            value="no-referrer"
+                            checked={form.referrerPolicy === "no-referrer"}
+                            onChange={(e) =>
+                              setForm({
+                                ...form,
+                                referrerPolicy: e.target.value,
+                              })
+                            }
+                          />
+
+                          <span>
+                            <strong>No Referrer</strong>
+
+                            <small>
+                              Sends no referrer information to the embedded
+                              player. Best for privacy.
+                            </small>
+                          </span>
+                        </label>
+
+                        {/* =========================================
+                            STRICT ORIGIN
+                        ========================================= */}
+
+                        <label className="player-setting-option">
+                          <input
+                            type="radio"
+                            name="referrerPolicy"
+                            value="strict-origin-when-cross-origin"
+                            checked={
+                              form.referrerPolicy ===
+                              "strict-origin-when-cross-origin"
+                            }
+                            onChange={(e) =>
+                              setForm({
+                                ...form,
+                                referrerPolicy: e.target.value,
+                              })
+                            }
+                          />
+
+                          <span>
+                            <strong>Strict Origin</strong>
+
+                            <small>
+                              Sends only your website's origin to a different
+                              origin over HTTPS. Often more compatible with
+                              providers that require a referrer.
+                            </small>
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* =================================================
@@ -1193,6 +1324,8 @@ export default function Admin() {
                     setForm({
                       ...emptyVideo,
                     });
+
+                    setPlayerSettingsOpen(false);
                   }}
                 >
                   Cancel
@@ -1260,10 +1393,6 @@ export default function Admin() {
 
                   return (
                     <article key={v._id}>
-                      {/* ========================================
-                          POSTER
-                      ======================================== */}
-
                       <div className="admin-video-poster">
                         <img src={v.posterUrl} alt="" />
 
@@ -1283,10 +1412,6 @@ export default function Admin() {
                         )}
                       </div>
 
-                      {/* ========================================
-                          INFO
-                      ======================================== */}
-
                       <div className="admin-video-info">
                         <strong>{v.title}</strong>
 
@@ -1297,15 +1422,7 @@ export default function Admin() {
                         </small>
                       </div>
 
-                      {/* ========================================
-                          EDIT
-                      ======================================== */}
-
                       <button onClick={() => openEditVideo(v)}>Edit</button>
-
-                      {/* ========================================
-                          DELETE
-                      ======================================== */}
 
                       <button
                         className="danger"

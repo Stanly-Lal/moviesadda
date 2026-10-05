@@ -52,13 +52,6 @@ const videoSchema = new mongoose.Schema(
     // PLAYER SETTINGS
     //
     // These are independent settings for each video.
-    //
-    // sandboxEnabled:
-    // Controls whether the iframe receives a sandbox attribute.
-    //
-    // orientationLock:
-    // Controls whether the iframe receives the
-    // "orientation-lock" permission.
     // ==========================================================
 
     sandboxEnabled: {
@@ -69,6 +62,24 @@ const videoSchema = new mongoose.Schema(
     orientationLock: {
       type: Boolean,
       default: false,
+    },
+
+    // ==========================================================
+    // IFRAME REFERRER POLICY
+    //
+    // Controls the Referrer-Policy used by this video's iframe.
+    //
+    // no-referrer:
+    // Sends no referrer information to the embedded player.
+    //
+    // strict-origin:
+    // Sends only the origin for cross-origin HTTPS requests.
+    // ==========================================================
+
+    referrerPolicy: {
+      type: String,
+      enum: ["no-referrer", "strict-origin-when-cross-origin"],
+      default: "no-referrer",
     },
   },
 

@@ -41,7 +41,6 @@ export default function MoviePlayer() {
         if (e.message === "Authentication required") {
           navigate("/login", {
             replace: true,
-
             state: {
               from: `/movieplayer/${id}`,
             },
@@ -64,63 +63,37 @@ export default function MoviePlayer() {
   }, [id, navigate]);
 
   // ==========================================================
-  // LOADING
+  // LOADING / ERROR
   // ==========================================================
 
   if (loading) {
     return (
-      <div className="player-error">
-        <h2>Loading movie…</h2>
-      </div>
-    );
-  }
-
-  // ==========================================================
-  // ERROR
-  // ==========================================================
-
-  if (error) {
-    return (
-      <div className="player-error">
-        <h2>Unable to load movie</h2>
-
-        <p>{error}</p>
-
-        <button type="button" onClick={() => navigate(-1)}>
-          Go Back
+      <div className="movie-player-page">
+        <button
+          type="button"
+          className="player-back-button"
+          onClick={() => navigate(-1)}
+          aria-label="Go back"
+        >
+          ←
         </button>
       </div>
     );
   }
 
-  // ==========================================================
-  // MOVIE NOT FOUND
-  // ==========================================================
-
-  if (!movie) {
+  if (error || !movie) {
     return (
-      <div className="player-error">
-        <h2>Movie not found</h2>
-
-        <button type="button" onClick={() => navigate(-1)}>
-          Go Back
+      <div className="movie-player-page">
+        <button
+          type="button"
+          className="player-back-button"
+          onClick={() => navigate(-1)}
+          aria-label="Go back"
+        >
+          ←
         </button>
-      </div>
-    );
-  }
 
-  // ==========================================================
-  // VIDEO NOT AVAILABLE
-  // ==========================================================
-
-  if (!movie.videoUrl) {
-    return (
-      <div className="player-error">
-        <h2>Video not available</h2>
-
-        <button type="button" onClick={() => navigate(-1)}>
-          Go Back
-        </button>
+        <div className="player-error">{error || "Video not found"}</div>
       </div>
     );
   }
@@ -134,10 +107,19 @@ export default function MoviePlayer() {
   const orientationLock = movie.orientationLock === true;
 
   // ==========================================================
-  // IFRAME ALLOW PERMISSIONS
+  // REFERRER POLICY
   //
-  // orientation-lock is added ONLY when enabled for this
-  // particular video.
+  // Existing videos without this field automatically use
+  // no-referrer.
+  // ==========================================================
+
+  const referrerPolicy =
+    movie.referrerPolicy === "strict-origin-when-cross-origin"
+      ? "strict-origin-when-cross-origin"
+      : "no-referrer";
+
+  // ==========================================================
+  // IFRAME ALLOW ATTRIBUTE
   // ==========================================================
 
   const allowAttribute = [
@@ -149,13 +131,7 @@ export default function MoviePlayer() {
   ].join("; ");
 
   // ==========================================================
-  // SANDBOX ATTRIBUTE
-  //
-  // When sandboxEnabled = false, the sandbox attribute is
-  // completely omitted.
-  //
-  // This is important because some third-party players can
-  // break when placed inside a sandboxed iframe.
+  // SANDBOX
   // ==========================================================
 
   const sandboxAttribute = sandboxEnabled
@@ -163,7 +139,7 @@ export default function MoviePlayer() {
     : undefined;
 
   // ==========================================================
-  // PLAYER
+  // RENDER
   // ==========================================================
 
   return (
@@ -184,7 +160,7 @@ export default function MoviePlayer() {
         frameBorder="0"
         allowFullScreen
         allow={allowAttribute}
-        referrerPolicy="no-referrer"
+        referrerPolicy={referrerPolicy}
         sandbox={sandboxAttribute}
       />
     </div>
